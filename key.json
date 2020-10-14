@@ -1,5 +1,19 @@
 {
-    "interrupt_correct" : "4I",
-    "correct" : "4",
-    "neg" : "XX"
+    "codes": {
+        "interrupt_correct": "4I",
+        "correct": "4",
+        "neg": "XX",
+        "incorrect1": "X1",
+        "incorrect2": "X2"
+    },
+    "TU_per_game": 23,
+    "cats": [
+        "all",
+        "bio",
+        "chem",
+        "energy",
+        "ess",
+        "math",
+        "phys"
+    ]
 }
