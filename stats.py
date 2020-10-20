@@ -28,16 +28,14 @@ def get_category(category):
         return 'n/a'
 
 
-# changable params
-directory = '2019-20 season'
+# working directory that contains all of the scoresheets
+directory = '2020-21 season\\Discord'
 
 with open('key.json') as f:
     json_data = json.load(f)
 
 cats = json_data['cats']
 codes = json_data['codes']
-TU_per_game = json_data['TU_per_game']
-
 all_players = {}
 
 for filename in os.listdir(directory):
@@ -54,14 +52,14 @@ for filename in os.listdir(directory):
                     'GP': 0,
                     'n/a': len(codes)*[0],
                 }
+
                 for i in range(len(cats)):
                     all_players[player][cats[i]] = len(codes)*[0]
 
-            fourI, four, neg = 0, 0, 0
+            fourI = four = neg = 0
 
             for i in map(lambda a: a + 2, range(game.shape[0] - 2)):
                 cell = str(game[i, j]).upper()
-                # print(cell)
                 cat = get_category(str(game[i, 1]))
                 index = -1
 
@@ -82,30 +80,28 @@ for filename in os.listdir(directory):
 
             all_players[player]['GP'] += 1
 
-cat_stats = {}
+stats = {}
 for cat in cats:
-    cat_stats[cat] = [['Player', 'GP', '4I', '4', '-4', 'X1', 'X2',
-                       'TUH', '#buzz', '%buzz', '%I', '4I/-4', '4s/-4', 'P/TU', 'Pts', 'PPG']]
+    stats[cat] = [['Player', 'GP', '4I', '4', '-4', 'X1', 'X2',
+                   'TUH', '#buzz', '%buzz', '%I', '4I/-4', '4s/-4', 'P/TU', 'Pts', 'PPG']]
 
 for player in all_players.keys():
     if sum(all_players[player]['all']) == 0:
         continue
 
     GP = all_players[player]['GP']
-    TUH = GP * TU_per_game
     for cat in cats:
+        TUH = GP * (23 if cat == 'all' else 4)
         fourI, four, neg, x1, x2 = all_players[player][cat]
 
         points = 4*fourI + 4*four - 4*neg
-        number_buzz = fourI + four + neg + x1 + x2
-        percent_buzz = str(100*round(number_buzz/TUH, 4)) + '%'
-        if number_buzz != 0:
-            percent_interrupt = str(
-                100 * round(((fourI + neg) / number_buzz), 4)) + '%'
+        num_buzz = fourI + four + neg + x1 + x2
+        pct_buzz = str(round(100*num_buzz/TUH, 2)) + '%'
+        P_TU = round(points/TUH, 2)
+        if num_buzz != 0:
+            pct_interrupt = str(round(100*(fourI + neg)/num_buzz, 2)) + '%'
         else:
-            percent_interrupt = 'N/A'
-
-        P_TU = round(points / TUH, 2)
+            pct_interrupt = 'N/A'
 
         if neg == 0:
             fourI_neg = 0 if fourI == 0 else 'inf'
@@ -115,12 +111,10 @@ for player in all_players.keys():
             four_neg = round((fourI + four)/neg, 2)
 
         ppg = round(points/GP, 2)
-
-        cat_stats[cat].append([player, GP, fourI, four, neg, x1, x2, TUH, number_buzz,
-                               percent_buzz, percent_interrupt, fourI_neg, four_neg, P_TU, points, ppg])
-
+        stats[cat].append([player, GP, fourI, four, neg, x1, x2, TUH, num_buzz,
+                           pct_buzz, pct_interrupt, fourI_neg, four_neg, P_TU, points, ppg])
 
 for cat in cats:
-    stats = pd.DataFrame(np.array(cat_stats[cat]))
     filename = directory + '_stats_' + cat + '.csv'
-    stats.to_csv(filename, header=None, index=False)
+    stat_sheet = pd.DataFrame(np.array(stats[cat]))
+    stat_sheet.to_csv(filename, header=None, index=False)
