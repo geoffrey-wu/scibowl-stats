@@ -12,7 +12,7 @@ def to_nparray(dataframe):
 
 def get_category(category):
     category = category.lower()
-    if category in ['bio', 'biology', 'b']:
+    if   category in ['bio', 'biology', 'b']:
         return cats[1]
     elif category in ['chem', 'chemistry', 'c', 'ch']:
         return cats[2]
@@ -22,7 +22,7 @@ def get_category(category):
         return cats[4]
     elif category in ['math', 'm']:
         return cats[5]
-    elif category in ['physics', 'phys', 'p']:
+    elif category in ['physics', 'phys', 'phy', 'p']:
         return cats[6]
     else:
         return 'n/a'
@@ -34,7 +34,15 @@ directory = '2020-21 season\\Discord'
 with open('key.json') as f:
     json_data = json.load(f)
 
-cats = json_data['cats']
+cats = [
+    "all",
+    "bio",
+    "chem",
+    "energy",
+    "ess",
+    "math",
+    "phys"
+]
 codes = json_data['codes']
 all_players = {}
 
