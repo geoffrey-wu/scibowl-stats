@@ -1,18 +1,10 @@
 {
+    "directory": "2020-21 season\\Discord",
     "codes": {
         "interrupt_correct": "4I",
         "correct": "4",
         "neg": "XX",
         "incorrect1": "X1",
         "incorrect2": "X2"
-    },
-    "cats": [
-        "all",
-        "bio",
-        "chem",
-        "energy",
-        "ess",
-        "math",
-        "phys"
-    ]
+    }
 }
