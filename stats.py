@@ -91,12 +91,10 @@ for filename in os.listdir(directory):
 # dictionary containing per category stats
 per_cat_stats = {}
 
-# columns of the spreadsheet--indicates type of data included
-header = [['Player', 'GP', '4I', '4', '-4', 'X1', 'X2',
-           'TUH', '#buzz', '%buzz', '%I', '4I/-4', '4s/-4', 'P/TU', 'Pts', 'PPG']]
-
+# initialize columns of the spreadsheet--indicates type of data included
 for cat in cats:
-    per_cat_stats[cat] = header
+    per_cat_stats[cat] = [['Player', 'GP', '4I', '4', '-4', 'X1', 'X2',
+           'TUH', '#buzz', '%buzz', '%I', '4I/-4', '4s/-4', 'P/TU', 'Pts', 'PPG']]
 
 for player in per_player_stats.keys():
     # if a player has no stats, don't include them in the stat report
@@ -117,8 +115,11 @@ for player in per_player_stats.keys():
         pct_buzz = str(round(100*num_buzz/TUH, 2)) + '%'
 
         # percentage of buzzes that are an interrupt
-        pct_I = str(round(100*(fourI + neg)/num_buzz, 2)) + '%'
-
+        if num_buzz != 0:
+            pct_I = str(round(100*(fourI + neg)/num_buzz, 2)) + '%'
+        else:
+            pct_I = 'N/A'
+        
         if neg == 0:
             fourI_neg = 0 if fourI == 0 else 'inf'
             four_neg = 0 if four + fourI == 0 else 'inf'
@@ -134,7 +135,7 @@ for player in per_player_stats.keys():
                                    pct_buzz, pct_I, fourI_neg, four_neg, P_TU, points, ppg])
 
 # write all the subject data into spreadsheets
-with pd.ExcelWriter(directory + '_stats_yes.xlsx') as writer:
+with pd.ExcelWriter(directory + '_stats_no.xlsx') as writer:
     for cat in cats:
         stat_sheet = pd.DataFrame(np.array(per_cat_stats[cat]))
         stat_sheet.to_excel(writer, sheet_name=cat, header=None, index=False)
