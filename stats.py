@@ -106,7 +106,7 @@ for player in per_player_stats.keys():
         fourI, four, neg, x1, x2 = per_player_stats[player][cat]
 
         # tossups heard
-        TUH = GP*(23 if cat == 'all' else 1)
+        TUH = GP*(23 if cat == 'all' else 4)
 
         # number of times the player buzzed
         num_buzz = fourI + four + neg + x1 + x2
