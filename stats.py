@@ -48,13 +48,21 @@ codes = json_data['codes']
 per_player_stats = {}
 
 for filename in os.listdir(directory):
+    print(filename)
     for game in pd.read_excel(directory + '\\' + filename, sheet_name=None).values():
         game = to_nparray(game)
 
+        loc_of_1 = 0 # location of the first one in the question number column
+        for i in range(game.shape[0]):
+            if game[i][0] == 1:
+                loc_of_1 = i
+                break
+
+        # j == column
         for j in range(game.shape[1] - 2):
-            player = str(game[1, j + 2]).upper().strip()
+            player = str(game[loc_of_1 - 1, j + 2]).upper().strip()
             # ignore if the cell is empty
-            if player == 'NAN':
+            if player in ['NAN', '']:
                 continue
 
             # create a new player if the player isn't already in the database
@@ -65,26 +73,25 @@ for filename in os.listdir(directory):
                 for cat in cats:
                     per_player_stats[player][cat] = len(codes)*[0]
 
-            for i in range(game.shape[0] - 2):
-                cell = str(game[i + 2, j + 2]).upper().strip()
-                cat = get_category(str(game[i + 2, 1]))
+            for i in range(game.shape[0] - loc_of_1):
+                cell = str(game[i + loc_of_1, j + 2]).upper().strip()
+                cat = get_category(str(game[i + loc_of_1, 1]))
                 index = -1
-
-                if cell == codes['interrupt_correct']:
+                
+                if cell in codes['interrupt_correct']:
                     index = 0
-                elif cell == codes['correct']:
+                elif cell in codes['correct']:
                     index = 1
-                elif cell == codes['neg']:
+                elif cell in codes['neg']:
                     index = 2
-                elif cell == codes['incorrect1']:
+                elif cell in codes['incorrect1']:
                     index = 3
-                elif cell == codes['incorrect2']:
+                elif cell in codes['incorrect2']:
                     index = 4
 
-                if index != -1:
+                if index != -1 and cat != 'n/a':
                     per_player_stats[player]['all'][index] += 1
-                    if cat != 'n/a':
-                        per_player_stats[player][cat][index] += 1
+                    per_player_stats[player][cat][index] += 1
 
             per_player_stats[player]['GP'] += 1
 
@@ -134,8 +141,19 @@ for player in per_player_stats.keys():
         per_cat_stats[cat].append([player, GP, fourI, four, neg, x1, x2, TUH, num_buzz,
                                    pct_buzz, pct_I, fourI_neg, four_neg, P_TU, points, ppg])
 
+aggregate_subject = [['Player', 'GP', 'ppg', 'bio', 'chem', 'energy', 'ess', 'math', 'phys']]
+for player in per_player_stats:
+    GP = per_player_stats[player]['GP']
+    array = [player, GP]
+    for cat in cats:
+        fourI, four, neg, x1, x2 = per_player_stats[player][cat]
+        array.append(round(4*(fourI + four - neg)/GP, 2))
+    aggregate_subject.append(array)
+
 # write all the subject data into spreadsheets
-with pd.ExcelWriter(directory + '_stats_no.xlsx') as writer:
+with pd.ExcelWriter(directory + '_stats_noyes.xlsx') as writer:
+    stat_sheet = pd.DataFrame(np.array(aggregate_subject))
+    stat_sheet.to_excel(writer, sheet_name='subject', header=None, index=False)
     for cat in cats:
         stat_sheet = pd.DataFrame(np.array(per_cat_stats[cat]))
         stat_sheet.to_excel(writer, sheet_name=cat, header=None, index=False)
