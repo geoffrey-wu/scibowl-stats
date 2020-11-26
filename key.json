@@ -1,10 +1,10 @@
 {
-    "directory": "2020-21 season\\Discord",
+    "directory": "geoffrey uwu",
     "codes": {
-        "interrupt_correct": "4I",
-        "correct": "4",
-        "neg": "XX",
-        "incorrect1": "X1",
-        "incorrect2": "X2"
+        "interrupt_correct": ["4I"],
+        "correct": ["4", "1", "1.0"],
+        "neg": ["XX", "-4", "-1", "-1.0"],
+        "incorrect1": ["X1", "0", "0.0"],
+        "incorrect2": ["X2"]
     }
 }
