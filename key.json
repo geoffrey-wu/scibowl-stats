@@ -1,10 +1,64 @@
 {
-    "directory": "geoffrey uwu",
+    "directory": "sbl standard",
+    "rosters": "SBL rosters standard.txt",
     "codes": {
-        "interrupt_correct": ["4I"],
-        "correct": ["4", "4.0", "1", "1.0"],
-        "neg": ["XX", "-4", "-4.0", "-1", "-1.0"],
-        "incorrect1": ["X1", "0", "0.0"],
-        "incorrect2": ["X2"]
+        "interrupt_correct": [
+            "4I"
+        ],
+        "correct": [
+            "4",
+            "4.0",
+            "1",
+            "1.0"
+        ],
+        "neg": [
+            "XX",
+            "-4",
+            "-4.0",
+            "-1",
+            "-1.0"
+        ],
+        "incorrect1": [
+            "X1",
+            "0",
+            "0.0"
+        ],
+        "incorrect2": [
+            "X2"
+        ]
+    },
+    "subjects": {
+        "all": [],
+        "bio": [
+            "b",
+            "bio",
+            "biology"
+        ],
+        "chem": [
+            "c",
+            "ch",
+            "chem",
+            "chemistry"
+        ],
+        "energy": [
+            "en",
+            "energy"
+        ],
+        "ess": [
+            "earth and space",
+            "es",
+            "ess"
+        ],
+        "math": [
+            "m",
+            "math"
+        ],
+        "physics": [
+            "p",
+            "ph",
+            "phy",
+            "phys",
+            "physics"
+        ]
     }
 }
