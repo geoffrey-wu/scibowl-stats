@@ -53,6 +53,7 @@ def get_question_row(game):
     return -1
 
 
+# read all of the players in the rosters file
 rosters = {}
 for line in open(json_data['rosters'], 'r'):
     player, team = line.split(',')
@@ -130,7 +131,7 @@ for filename in os.listdir(directory):
 
         n = 0
         for j in range(game.shape[1]):
-            if 'bonus' in [str(game[1, j])[:5], str(game[0, j])[:5]].strip().lower():
+            if str(game[1, j]).strip().lower()[:5] == 'bonus' or str(game[0, j]).strip().lower()[:5] == 'bonus':
                 for i in 2 + np.array(range(game.shape[0] - 2)):
                     if str(game[i, j]).strip() in ['1', '1.0', '10', '10.0']:
                         cat = get_category(str(game[i, 1]))
