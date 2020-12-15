@@ -1,6 +1,9 @@
 {
-    "directory": "sbl standard",
+    "directory": "standard",
     "rosters": "SBL rosters standard.txt",
+    "skip players with no buzzes": false,
+    "has interrupt corrects": false,
+    "force questions to have categories": true,
     "codes": {
         "interrupt_correct": [
             "4I"
