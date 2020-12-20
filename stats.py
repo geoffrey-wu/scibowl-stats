@@ -55,11 +55,12 @@ def get_question_row(game):
 
 # read all of the players in the rosters file
 rosters = {}
-for line in open(json_data['rosters'], 'r'):
-    player, team = line.split(',')
-    player = player.strip().title()
-    team = team.strip().title()
-    rosters[player] = team
+if json_data['rosters'] != '':
+    for line in open(json_data['rosters'], 'r'):
+        player, team = line.split(',')
+        player = player.strip().title()
+        team = team.strip().title()
+        rosters[player] = team
 
 
 # dictionary containing per player stats
@@ -75,10 +76,11 @@ for team in rosters.values():
         for cat in cats:
             per_team_bonus_stats[team][cat] = [0, 0]
 
+print(type(pd.read_excel(directory + '\\' + 'Jett Scoresheet.xlsx', sheet_name=None)))
+
 
 # reads all of the spreadsheets in the given folder and reads the data in each of the files
 for filename in os.listdir(directory):
-    print(filename)
     for game in pd.read_excel(directory + '\\' + filename, sheet_name=None).values():
 
         # converts the pandas dataframe to a np.array
@@ -97,7 +99,8 @@ for filename in os.listdir(directory):
             # create a new player if the player isn't already in the database
             if player not in per_player_stats:
                 per_player_stats[player] = {
-                    'GP': 0
+                    'GP': 0,
+                    'TUH': 0
                 }
                 for cat in cats:
                     per_player_stats[player][cat] = len(codes)*[0]
@@ -116,6 +119,11 @@ for filename in os.listdir(directory):
             for i in question_row + np.array(range(game.shape[0] - question_row)):
                 # cell that records their buzz
                 cell = str(game[i, j]).upper().strip()
+
+                if str(game[i, 0]).upper().strip() in ['PLAYER TUH']:
+                    if cell != 'NAN':
+                        per_player_stats[player]['TUH'] += int(cell)
+
                 # category the question was in
                 cat = get_category(str(game[i, 1]))
                 index = get_code_index(cell)
@@ -167,7 +175,7 @@ for cat in cats:
         '4I/-4',    # interrupt corrects per neg
         '4s/-4',    # corrects per neg
         'P/TUH',    # points per tossup heard
-        'Pts',      # total points
+        'Points',      # total points
         'PPG'       # points per game
     ]]
     per_cat_stats[cat] = [[i for i in temp[0]]]
@@ -197,21 +205,42 @@ for player in per_player_stats:
     if json_data['skip players with no buzzes'] and sum(per_player_stats[player]['all']) == 0:
         continue
 
-    GP = per_player_stats[player]['GP']  # games played
+
+    if json_data['track TUH']:
+        TUH_total = per_player_stats[player]['TUH']   # tossups heard
+        GP = round(TUH_total/23, 2)
+        per_player_stats[player]['GP'] = GP
+    else:
+        GP = per_player_stats[player]['GP']    # games played
+
+    if GP == 0:
+        continue
+
     for cat in cats:
         fourI, four, neg, x1, x2 = per_player_stats[player][cat]
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
-        TUH = GP * {
-            'all': 23,
-            'bio': 4,
-            'chem': 4,
-            'energy': 3,
-            'ess': 4,
-            'math': 4,
-            'physics': 4
-        }[cat]
+        if json_data['track TUH']:
+            TUH = GP * {
+                'all': 23,
+                'bio': 4,
+                'chem': 4,
+                'energy': 3,
+                'ess': 4,
+                'math': 4,
+                'physics': 4
+            }[cat]
+        else:
+            TUH = round(TUH_total/23 * {
+                'all': 23,
+                'bio': 4,
+                'chem': 4,
+                'energy': 3,
+                'ess': 4,
+                'math': 4,
+                'physics': 4
+            }[cat])
 
         # number of times the player buzzed
         num_buzz = fourI + four + neg + x1 + x2
@@ -260,7 +289,8 @@ for player in per_player_stats:
 
         player_data = per_team_tu_stats[cat][player_to_team_num(
             player)]  # player
-        player_data[1] = max([player_data[1], GP])  # GP
+        player_data[1] = max(
+            [player_data[1], GP, per_team_bonus_stats[rosters[player]]['GP']])  # GP
         player_data[2] += fourI  # fourI
         player_data[3] += four  # four
         player_data[4] += neg  # neg
@@ -308,6 +338,8 @@ for i in range(len(rosters.values())):
 
 for player in per_player_stats:
     GP = per_player_stats[player]['GP']
+    if GP == 0:
+        continue
     player_data = [player, GP]
     for cat in cats:  # append the points per game for that category
         fourI, four, neg, x1, x2 = per_player_stats[player][cat]
@@ -322,7 +354,7 @@ for player in per_player_stats:
 
     array2 = aggregate_subject_team[player_to_team_num(player)]
     array2[0] = team
-    array2[1] = max(array2[1], GP)
+    array2[1] = max(array2[1], GP, per_team_bonus_stats[team]['GP'])
 
     for i in range(7):
         array2[i+2] = round(array2[i+2] + player_data[i+2], 2)
@@ -354,10 +386,10 @@ for team in per_team_bonus_stats:
     per_team_stats_array.append(player_data)
 
 
-# if the spreadsheets do NOT have designations for 
+# if the spreadsheets do NOT have designations for
 # tossups that were interrupted correctly, then
 # delete all columns which rely on this data
-if json_data['has interrupt corrects'] == False:
+if not json_data['has interrupt corrects']:
     for cat in cats:
         per_cat_stats[cat] = np.delete(
             per_cat_stats[cat], [2, 6, 10, 11], axis=1)
@@ -373,21 +405,24 @@ def delete_empty_rows(array2):
 
     return np.delete(array2, rows_to_delete, axis=0)
 
+
 aggregate_subject_team = delete_empty_rows(aggregate_subject_team)
 for cat in cats:
     per_team_tu_stats[cat] = delete_empty_rows(per_team_tu_stats[cat])
 
 
 def write_to_excel(writer, data, name):
-    stat_sheet = pd.DataFrame(np.array(aggregate_subject))
+    stat_sheet = pd.DataFrame(np.array(data))
     stat_sheet.to_excel(writer, sheet_name=name, header=None, index=False)
 
 
 # write all the data into spreadsheets
 with pd.ExcelWriter(directory + '_stats.xlsx') as writer:
     write_to_excel(writer, aggregate_subject, 'subject')
-    write_to_excel(writer, aggregate_subject_team, 'subject_team')
-    write_to_excel(writer, per_team_stats_array, 'bonus')
+    if json_data['rosters'] != '':
+        write_to_excel(writer, aggregate_subject_team, 'subject_team')
+        write_to_excel(writer, per_team_stats_array, 'bonus')
     for cat in cats:
         write_to_excel(writer, per_cat_stats[cat], cat)
-        write_to_excel(writer, per_team_tu_stats[cat], cat + '_team')
+        if json_data['rosters'] != '':
+            write_to_excel(writer, per_team_tu_stats[cat], cat + '_team')

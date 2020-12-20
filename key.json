@@ -1,9 +1,10 @@
 {
-    "directory": "standard",
-    "rosters": "SBL rosters standard.txt",
+    "directory": "mosfet",
+    "rosters": "mosfet rosters.txt",
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "force questions to have categories": true,
+    "track TUH": true,
     "codes": {
         "interrupt_correct": [
             "4I"
@@ -40,11 +41,13 @@
         "chem": [
             "c",
             "ch",
+            "che",
             "chem",
             "chemistry"
         ],
         "energy": [
             "en",
+            "ene",
             "energy"
         ],
         "ess": [
@@ -54,6 +57,7 @@
         ],
         "math": [
             "m",
+            "mat",
             "math"
         ],
         "physics": [
