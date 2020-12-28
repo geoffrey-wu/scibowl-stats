@@ -1,3 +1,4 @@
 
 *.xlsx
 *.txt
+!requirements.txt
