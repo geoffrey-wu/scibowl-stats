@@ -3,7 +3,12 @@
 A program to calculate science bowl stats based on science bowl scoresheets.
 
 # How to use
-First, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in ``key.json`` to the path of the score sheets (note: this path can be relative or absolute). 
+
+First, install any dependencies. This can be done by running the following command in the terminal:
+
+``pip install -r requirements.txt``
+
+Next, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in ``key.json`` to the path of the score sheets (note: this path can be relative or absolute). 
 
 The file ``stats.py`` contains all of the code required to generate the spreadsheets (simply run the file to generate the stat reports). The stat reports will appear in a single Microsoft Excel spreadsheet. 
 
