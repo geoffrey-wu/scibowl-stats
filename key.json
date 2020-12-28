@@ -1,5 +1,5 @@
 {
-    "directory": "mosfet",
+    "directory": "mosfet day 1",
     "rosters": "mosfet rosters.txt",
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
