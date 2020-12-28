@@ -76,13 +76,11 @@ for team in rosters.values():
         for cat in cats:
             per_team_bonus_stats[team][cat] = [0, 0]
 
-print(type(pd.read_excel(directory + '\\' + 'Jett Scoresheet.xlsx', sheet_name=None)))
-
-
 # reads all of the spreadsheets in the given folder and reads the data in each of the files
 for filename in os.listdir(directory):
+    print(filename)
+    
     for game in pd.read_excel(directory + '\\' + filename, sheet_name=None).values():
-
         # converts the pandas dataframe to a np.array
         game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
         teams_in_game = []
