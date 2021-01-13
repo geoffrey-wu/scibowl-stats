@@ -42,9 +42,6 @@ The report will generate a total of 17 different reports, each one in its own ta
         - pts: the total number of points the player has scored, where interrupt incorrect buzzes count for -4 points for that player (as opposed to DOE roles, which give 4 points to the other team)
         - ppg: the average number of points a player scores per game
 
-# TODO
-- add feature where if all the rounds have the same subject order, then the program can automatically calculate category stats based on the list of categories
-
 # Known issues
 - TUH is incorrect for many teams and is not correlated with GP
 - subject_team adds the ppg for each team member, which is incorrect
