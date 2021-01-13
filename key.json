@@ -5,6 +5,12 @@
     "has interrupt corrects": false,
     "force questions to have categories": true,
     "track TUH": true,
+	"player names to ignore": [
+		"Player",
+		"Bonus",
+		"Score",
+		"Unnamed"
+	],
     "codes": {
         "interrupt_correct": [
             "4I"

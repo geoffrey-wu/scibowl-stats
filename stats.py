@@ -90,9 +90,13 @@ for filename in os.listdir(directory):
             player = str(game[question_row - 1, j]).title().strip()
             if player in ['Nan', '']:  # ignore if the cell is empty
                 continue
-
-            if player[:6] == 'Player' or player[:5] == 'Bonus' or player[:11] == 'Total Score' or player[:7] == 'Unnamed' or player == 'Score':
-                continue
+            
+            for s in json_data['player names to ignore']:
+                if s in player:
+                    continue
+            
+            # if player[:6] == 'Player' or player[:5] == 'Bonus' or player[:11] == 'Total Score' or player[:7] == 'Unnamed' or player == 'Score':
+                # continue
 
             # create a new player if the player isn't already in the database
             if player not in per_player_stats:
@@ -131,13 +135,13 @@ for filename in os.listdir(directory):
                         per_player_stats[player]['all'][index] += 1
                         per_player_stats[player][cat][index] += 1
 
-        # skip if there are fewer than 2 teams
+        # skip bonus stats if there are fewer than 2 teams
         if len(teams_in_game) < 2:
             continue
 
         n = 0
         for j in range(game.shape[1]):
-            if str(game[1, j]).strip().lower()[:5] == 'bonus' or str(game[0, j]).strip().lower()[:5] == 'bonus':
+            if 'bonus' in str(game[1, j]).lower() or 'bonus' in str(game[0, j]).lower():
                 for i in 2 + np.array(range(game.shape[0] - 2)):
                     if str(game[i, j]).strip() in ['1', '1.0', '10', '10.0']:
                         cat = get_category(str(game[i, 1]))
