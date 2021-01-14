@@ -2,3 +2,4 @@
 *.xlsx
 *.txt
 !requirements.txt
+!subject order.txt
