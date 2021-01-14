@@ -64,7 +64,7 @@ if json_data['rosters'] != '':
 
 
 # dictionary containing per player stats
-per_player_stats = {}
+player_stats = {}
 
 # dictionary containing per team bonus stats
 per_team_bonus_stats = {}
@@ -88,24 +88,21 @@ for filename in os.listdir(directory):
 
         for j in 2 + np.array(range(game.shape[1] - 2)):
             player = str(game[question_row - 1, j]).title().strip()
-            if player in ['Nan', '']:  # ignore if the cell is empty
-                continue
-            
+            skip_player = player in ['', 'Nan']
             for s in json_data['player names to ignore']:
-                if s in player:
-                    continue
+                skip_player = skip_player or (s in player)
             
-            # if player[:6] == 'Player' or player[:5] == 'Bonus' or player[:11] == 'Total Score' or player[:7] == 'Unnamed' or player == 'Score':
-                # continue
+            if skip_player:
+                continue
 
             # create a new player if the player isn't already in the database
-            if player not in per_player_stats:
-                per_player_stats[player] = {
+            if player not in player_stats:
+                player_stats[player] = {
                     'GP': 0,
                     'TUH': 0
                 }
                 for cat in cats:
-                    per_player_stats[player][cat] = len(codes)*[0]
+                    player_stats[player][cat] = len(codes)*[0]
 
             # if the player is on a team, then add that
             # player's team to the list of teams in the game
@@ -114,7 +111,7 @@ for filename in os.listdir(directory):
                 if team not in teams_in_game:
                     teams_in_game.append(team)
 
-            per_player_stats[player]['GP'] += 1
+            player_stats[player]['GP'] += 1
 
             # for each player, look down their respective column
             # to collect data on when they buzzed
@@ -124,7 +121,7 @@ for filename in os.listdir(directory):
 
                 if str(game[i, 0]).upper().strip() in ['PLAYER TUH']:
                     if cell != 'NAN':
-                        per_player_stats[player]['TUH'] += int(cell)
+                        player_stats[player]['TUH'] += int(cell)
 
                 # category the question was in
                 if json_data['subject order directory'] == '':
@@ -137,8 +134,8 @@ for filename in os.listdir(directory):
                     ]
                 if index != -1:
                     if not json_data['force questions to have categories'] or cat != 'n/a':
-                        per_player_stats[player]['all'][index] += 1
-                        per_player_stats[player][cat][index] += 1
+                        player_stats[player]['all'][index] += 1
+                        player_stats[player][cat][index] += 1
 
         # skip bonus stats if there are fewer than 2 teams
         if len(teams_in_game) < 2:
@@ -207,29 +204,29 @@ def player_to_team_num(player):
 
 
 # compiles per-category stats from the per-player stats
-for player in per_player_stats:
+for player in player_stats:
     # if a player has no stats, don't include them in the stat report
-    if json_data['skip players with no buzzes'] and sum(per_player_stats[player]['all']) == 0:
+    if json_data['skip players with no buzzes'] and sum(player_stats[player]['all']) == 0:
         continue
 
 
     if json_data['track TUH']:
-        TUH_total = per_player_stats[player]['TUH']   # tossups heard
+        TUH_total = player_stats[player]['TUH']   # tossups heard
         GP = round(TUH_total/23, 2)
-        per_player_stats[player]['GP'] = GP
+        player_stats[player]['GP'] = GP
     else:
-        GP = per_player_stats[player]['GP']    # games played
+        GP = player_stats[player]['GP']    # games played
 
     if GP == 0:
         continue
 
     for cat in cats:
-        fourI, four, neg, x1, x2 = per_player_stats[player][cat]
+        fourI, four, neg, x1, x2 = player_stats[player][cat]
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
         if json_data['track TUH']:
-            TUH = GP * {
+            TUH = round(GP * {
                 'all': 23,
                 'bio': 4,
                 'chem': 4,
@@ -237,7 +234,7 @@ for player in per_player_stats:
                 'ess': 4,
                 'math': 4,
                 'physics': 4
-            }[cat]
+            }[cat])
         else:
             TUH = round(TUH_total/23 * {
                 'all': 23,
@@ -294,8 +291,7 @@ for player in per_player_stats:
         if player_to_team_num(player) < 0:
             continue
 
-        player_data = per_team_tu_stats[cat][player_to_team_num(
-            player)]  # player
+        player_data = per_team_tu_stats[cat][player_to_team_num(player)]  # player
         player_data[1] = max(
             [player_data[1], GP, per_team_bonus_stats[rosters[player]]['GP']])  # GP
         player_data[2] += fourI  # fourI
@@ -303,7 +299,15 @@ for player in per_player_stats:
         player_data[4] += neg  # neg
         player_data[5] += x1  # X1
         player_data[6] += x2  # x2
-        player_data[7] = max(player_data[7], TUH)  # TUH
+        player_data[7] = max([player_data[7], TUH, round(player_data[1] * {
+                'all': 23,
+                'bio': 4,
+                'chem': 4,
+                'energy': 3,
+                'ess': 4,
+                'math': 4,
+                'physics': 4
+            }[cat])])  # TUH
         player_data[8] += num_buzz  # number of buzzes
         player_data[9] = str(
             round(100*player_data[8]/player_data[7], 2)) + '%'  # pct_buzz
@@ -343,13 +347,13 @@ aggregate_subject_team = [[
 for i in range(len(rosters.values())):
     aggregate_subject_team.append([0]*9)
 
-for player in per_player_stats:
-    GP = per_player_stats[player]['GP']
+for player in player_stats:
+    GP = player_stats[player]['GP']
     if GP == 0:
         continue
     player_data = [player, GP]
     for cat in cats:  # append the points per game for that category
-        fourI, four, neg, x1, x2 = per_player_stats[player][cat]
+        fourI, four, neg, x1, x2 = player_stats[player][cat]
         player_data.append(round(4*(fourI + four - neg)/GP, 2))
 
     aggregate_subject.append(player_data)
@@ -367,7 +371,7 @@ for player in per_player_stats:
         array2[i+2] = round(array2[i+2] + player_data[i+2], 2)
 
     for cat in cats:
-        fourI, four, neg, x1, x2 = per_player_stats[player][cat]
+        fourI, four, neg, x1, x2 = player_stats[player][cat]
 
         # number of bonuses heard
         per_team_bonus_stats[team][cat][1] += fourI + four

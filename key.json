@@ -1,17 +1,17 @@
 {
-    "directory": "mosfet day 1",
+    "directory": "Day 1",
     "rosters": "mosfet rosters.txt",
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "force questions to have categories": true,
     "track TUH": true,
-	"subject order directory": "subject order.txt",
-	"player names to ignore": [
-		"Player",
-		"Bonus",
-		"Score",
-		"Unnamed"
-	],
+    "subject order directory": "",
+    "player names to ignore": [
+        "Player",
+        "Bonus",
+        "Score",
+        "Unnamed"
+    ],
     "codes": {
         "interrupt_correct": [
             "4I"
@@ -31,7 +31,7 @@
         ],
         "incorrect1": [
             "X1",
-			"X",
+            "X",
             "0",
             "0.0"
         ],
@@ -65,7 +65,7 @@
         ],
         "math": [
             "m",
-			"ma",
+            "ma",
             "mat",
             "math"
         ],
