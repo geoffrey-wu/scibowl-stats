@@ -43,4 +43,3 @@ The report will generate a total of 17 different reports, each one in its own ta
         - ppg: the average number of points a player scores per game
 
 # Known issues
-- subject_team adds the ppg for each team member, which is incorrect
