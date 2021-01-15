@@ -12,9 +12,26 @@ Next, add the folder containing the scoresheets (which must be in microsoft exce
 The file ``stats.py`` contains all of the code required to generate the spreadsheets (simply run the file to generate the stat reports). The stat reports will appear in a single Microsoft Excel spreadsheet. 
 
 # Options
-The ``key.json`` file provides a tremendous amount of flexibility and adaptability for the user. The following options can be changed in ``key.json``:
+The following options can be changed in ``key.json``:
 - directory: stores the filepath to the folder with the scoresheets
 - rosters: stores the filepath to the plaintext file with the rosters, which is a comma-seperated file with the name of the player, followed by the name of their team
+- force questions to have categories: (recommended: `false`)
+    - If set to `true`, then the program will attempt to detect a category for each question, either by having the category in the column adjacent to the question number column or by having a "subject order" file. __Any question that does NOT have a category will be ignored and not included in the final stat report.__
+    - If set to `false`, then which category a question is in will still be tracked, but there is no requirement for questions to have a subject, and questions without a category will still be tracked. 
+- skip players with no buzzes: (recommended: `false`)
+    - If set to `true`, then don't include stats for any players with 0 buzzes.
+    - If set to `false`, include stats for *all* players, regardless of how many buzzes they have.
+- has interrupt corrects: (recommended: `false`)
+    - If set to `true`, then the program will try to track the number of times a player interrupted correctly by looking for an "interrupt correct" symbol in the json file.
+    - If set to `false`, then the program does not track this statistic
+- track TUH: (recommended: `false`)
+    - If set to `true`, then the program will attempt to detect a row on the spreadsheet that has the number of tossups each player heard. 
+    - If set to `false`, then the program will assume that each player plays a full game in each spreadsheet that they appear in.
+- subject order directory: (recommended: "")
+    - If every packet has the same category order (e.g. question #1 is always physics, question #2 is always biology), then it may be helpful to include a text file that lists the order of the categories, with each new line denoting a new question category. In that case, this variable would indicate the path to that file.
+    - If no such file exists, then set this variable to `""` (an empty string).
+- player names to ignore: 
+    - Often times, other strings (like "Bonus" or "Question") are interpreted as player names. Any player names that contain one or more of the strings in this array as substrings will be ignored and assumed to not be a player. 
 
 # Interpreting the Reports
 The report will generate a total of 17 different reports, each one in its own tab. Here are the 17:

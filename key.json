@@ -1,10 +1,10 @@
 {
     "directory": "Day 1",
     "rosters": "mosfet rosters.txt",
+    "force questions to have categories": false,
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
-    "force questions to have categories": true,
-    "track TUH": true,
+    "track TUH": false,
     "subject order directory": "",
     "player names to ignore": [
         "Player",
