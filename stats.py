@@ -131,9 +131,11 @@ for filename in os.listdir(directory):
                     cat = get_category[open(json_data['category order filepath'], 'r').readLines()[
                         i - question_row]]
                 if index != -1:
-                    if not json_data['force questions to have categories'] or cat != 'n/a':
+                    if cat != 'n/a':
                         player_stats[player]['all'][index] += 1
                         player_stats[player][cat][index] += 1
+                    elif not json_data['force questions to have categories']:
+                        player_stats[player]['all'][index] += 1
 
         # skip bonus stats if there are fewer than 2 teams
         if len(teams_in_game) < 2:
@@ -212,6 +214,7 @@ for player in player_stats:
         player_stats[player]['GP'] = GP
     else:
         GP = player_stats[player]['GP']    # games played
+        TUH_total = GP * 23
 
     if GP == 0:
         continue

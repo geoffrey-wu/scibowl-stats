@@ -7,7 +7,7 @@ First, install any python dependencies. The python version used is ``3.9.1``. Ot
 
 Next, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in ``key.json`` to the path of the score sheets (note: this path can be relative or absolute). 
 
-The file ``stats.py`` contains all of the code required to generate the spreadsheets (simply run the file to generate the stat reports). The stat reports will appear in a single Microsoft Excel spreadsheet. 
+Running the file ``stats.py`` will generate all the stat reports in a single Microsoft Excel spreadsheet. Python files can be run by typing the name of the file, like this: `python stats.py`
 
 # Options
 The following options can be changed in ``key.json``:
@@ -52,8 +52,8 @@ The report will generate a total of 17 different reports, each one in its own ta
         - 4I/-4: the number of interrupt correct buzzes divided by the number of interrupt incorrect buzzes. Note: this statistic will not appear if "4I" is not supported
         - 4s/-4: the number of correct buzzes (including both interrupts and non-interrupts) divided by the number of interrupt incorrect buzzes
         - P/TUH: the avergae number of points a player gets per tossup they hear
-        - pts: the total number of points the player has scored, where interrupt incorrect buzzes count for -4 points for that player (as opposed to DOE roles, which give 4 points to the other team)
-        - ppg: the average number of points a player scores per game
+        - Pts: the total number of points the player has scored, where interrupt incorrect buzzes count for -4 points for that player (as opposed to DOE roles, which give 4 points to the other team)
+        - PPG: the average number of points a player scores per game
 
 # Known issues
 There are currently no known issues!
