@@ -10,7 +10,8 @@ import pandas as pd
 with open('key.json') as f:
     json_data = json.load(f)
 
-cats = [cat for cat in json_data['subjects'].keys()]  # different subject categories
+# different subject categories
+cats = [cat for cat in json_data['subjects'].keys()]
 
 # file directory that contains all of the scoresheets
 directory = json_data['directory']
@@ -62,6 +63,7 @@ if json_data['rosters'] != '':
         team = team.strip().title()
         rosters[player] = team
 
+teams = [team for team in set(rosters.values())]
 
 # dictionary containing per-player stats
 player_stats = {}
@@ -154,11 +156,8 @@ for filename in os.listdir(directory):
         team_bonus_stats[teams_in_game[1]]['GP'] += 1
 
 
-# dictionary containing per-category stats
-cat_stats = {}
-
-# dictionary containing per-team tossup stats
-team_tu_stats = {}
+cat_stats = {}      # dictionary containing per-category stats
+team_tu_stats = {}  # dictionary containing per-team tossup stats
 
 # initialize columns of the spreadsheet--indicates type of data included
 for cat in cats:
@@ -183,17 +182,18 @@ for cat in cats:
     # initialize these arrays to deep copies of temp
     cat_stats[cat] = [[i for i in temp]]
     team_tu_stats[cat] = [[i for i in temp]]
+    team_tu_stats[cat][0][0] = 'Team'  # Change 'Player' to 'Team'
 
 
 team_to_number = {}
-i = 0
-for team in rosters.values():
-    i += 1
+i = 1
+for team in teams:
     team_to_number[team] = i
+    i += 1
     for cat in cats:
-        player_data = [0]*16
-        player_data[0] = team
-        team_tu_stats[cat].append(player_data)
+        team_data = [0]*16
+        team_data[0] = team
+        team_tu_stats[cat].append(team_data)
 
 
 def player_to_team_num(player):
@@ -290,16 +290,15 @@ for player in player_stats:
         if player_to_team_num(player) < 0:
             continue
 
-        player_data = team_tu_stats[cat][player_to_team_num(
-            player)]  # player
-        player_data[1] = max(
-            [player_data[1], GP, team_bonus_stats[rosters[player]]['GP']])  # GP
-        player_data[2] += fourI  # fourI
-        player_data[3] += four  # four
-        player_data[4] += neg  # neg
-        player_data[5] += x1  # X1
-        player_data[6] += x2  # x2
-        player_data[7] = max([player_data[7], TUH, round(player_data[1] * {
+        team_data = team_tu_stats[cat][player_to_team_num(player)]  # team
+        team_data[1] = max(
+            [team_data[1], GP, team_bonus_stats[rosters[player]]['GP']])  # GP
+        team_data[2] += fourI   # fourI
+        team_data[3] += four    # four
+        team_data[4] += neg     # neg
+        team_data[5] += x1      # X1
+        team_data[6] += x2      # x2
+        team_data[7] = max([team_data[7], TUH, round(team_data[1] * {
             'all': 23,
             'bio': 4,
             'chem': 4,
@@ -308,16 +307,16 @@ for player in player_stats:
             'math': 4,
             'physics': 4
         }[cat])])  # TUH
-        player_data[8] += num_buzz  # number of buzzes
-        player_data[9] = str(
-            round(100*player_data[8]/player_data[7], 2)) + '%'  # pct_buzz
-        player_data[10] = 0  # pct_I
-        player_data[11] = 0  # fourI_neg
-        player_data[12] = 'inf' if player_data[4] == 0 else round(
-            player_data[3]/player_data[4], 2)  # four_neg
-        player_data[14] += points  # points
-        player_data[13] = round(player_data[14]/player_data[7], 2)  # P_TUH
-        player_data[15] = round(player_data[14]/player_data[1], 2)  # ppg
+        team_data[8] += num_buzz  # number of buzzes
+        team_data[9] = str(
+            round(100*team_data[8]/team_data[7], 2)) + '%'  # pct_buzz
+        team_data[10] = 0  # pct_I
+        team_data[11] = 0  # fourI_neg
+        team_data[12] = 'inf' if team_data[4] == 0 else round(
+            team_data[3]/team_data[4], 2)  # four_neg
+        team_data[14] += points  # points
+        team_data[13] = round(team_data[14]/team_data[7], 2)  # P_TUH
+        team_data[15] = round(team_data[14]/team_data[1], 2)  # ppg
 
 # compiles subject and bonus stats
 aggregate_subject = [[
@@ -333,7 +332,7 @@ aggregate_subject = [[
 ]]
 
 aggregate_subject_team = [[
-    'Player',
+    'Team',
     'GP',
     'ppg',
     'bio',
@@ -344,47 +343,30 @@ aggregate_subject_team = [[
     'physics'
 ]]
 
-for i in range(len(rosters.values())):
+for i in range(len(teams)):
     aggregate_subject_team.append([0]*9)
 
 for player in player_stats:
     GP = player_stats[player]['GP']
     if GP == 0:
         continue
-    player_data = [player, GP]
+    team_data = [player, GP]
     for cat in cats:  # append the points per game for that category
         fourI, four, neg, x1, x2 = player_stats[player][cat]
-        player_data.append(round(4*(fourI + four - neg)/GP, 2))
+        team_data.append(round(4*(fourI + four - neg)/GP, 2))
 
-    aggregate_subject.append(player_data)
+    aggregate_subject.append(team_data)
 
-    # if player not in rosters:
-    #     continue
-
-    # team = rosters[player]
-
-    # array2 = aggregate_subject_team[player_to_team_num(player)]
-    # array2[0] = team
-    # array2[1] = max(array2[1], GP, team_bonus_stats[team]['GP'])
-
-    # for i in range(7):
-    #     array2[i+2] = round(array2[i+2] + player_data[i+2], 2)
-
-    # for cat in cats:
-    #     fourI, four, neg, x1, x2 = player_stats[player][cat]
-
-    #     # number of bonuses heard
-    #     team_bonus_stats[team][cat][1] += fourI + four
-
-for i in range(len(rosters.values())):
+for i in range(len(teams)):
+    i = i + 1
     array2 = aggregate_subject_team[i]
-    array2[0] = team_tu_stats['all'][i][0]
-    array2[1] = team_tu_stats['all'][i][1]
+    array2[0] = team_tu_stats['all'][i][0]  # team name
+    array2[1] = team_tu_stats['all'][i][1]  # games played
     for j in range(len(cats)):
         array2[j+2] = team_tu_stats[cats[j]][i][-1]
 
 
-# converts per_team_bonus_stats, a dictionary, to per_team_stats_array,
+# converts team_bonus_stats, a dictionary, to team_bonus_stats_array,
 # a 2D array used for saving to an excel spreadsheet
 team_bonus_stats_array = [['team', 'GP']]
 for cat in cats:
@@ -393,15 +375,15 @@ for cat in cats:
     team_bonus_stats_array[0].append('%')
 
 for team in team_bonus_stats:
-    player_data = [team, team_bonus_stats[team]['GP']]
+    team_data = [team, team_bonus_stats[team]['GP']]
     for cat in cats:
         correct = team_bonus_stats[team][cat][0]
         total = team_bonus_stats[team][cat][1]
         percentage = 0 if total == 0 else round(100*correct/total, 2)
-        player_data.append(correct)
-        player_data.append(total)
-        player_data.append(percentage)
-    team_bonus_stats_array.append(player_data)
+        team_data.append(correct)
+        team_data.append(total)
+        team_data.append(percentage)
+    team_bonus_stats_array.append(team_data)
 
 
 # if the spreadsheets do NOT have designations for
@@ -423,9 +405,9 @@ def delete_empty_rows(array2):
     return np.delete(array2, rows_to_delete, axis=0)
 
 
-aggregate_subject_team = delete_empty_rows(aggregate_subject_team)
-for cat in cats:
-    team_tu_stats[cat] = delete_empty_rows(team_tu_stats[cat])
+# aggregate_subject_team = delete_empty_rows(aggregate_subject_team)
+# for cat in cats:
+#     team_tu_stats[cat] = delete_empty_rows(team_tu_stats[cat])
 
 
 def write_to_excel(writer, data, name):
