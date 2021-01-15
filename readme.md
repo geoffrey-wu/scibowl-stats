@@ -1,11 +1,9 @@
-
-
 A program to calculate science bowl stats based on science bowl scoresheets.
 
 # How to use
 First, install any python dependencies. The python version used is ``3.9.1``. Other Python 3 versions may work, but Python 2 will not work. This can be done by running the following command in the terminal:
 
-``pip install -r requirements.txt``
+`pip install -r requirements.txt`
 
 Next, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in ``key.json`` to the path of the score sheets (note: this path can be relative or absolute). 
 
@@ -27,7 +25,7 @@ The following options can be changed in ``key.json``:
 - track TUH: (recommended: `false`)
     - If set to `true`, then the program will attempt to detect a row on the spreadsheet that has the number of tossups each player heard. 
     - If set to `false`, then the program will assume that each player plays a full game in each spreadsheet that they appear in.
-- subject order directory: (recommended: "")
+- category order filepath: (recommended: `""`)
     - If every packet has the same category order (e.g. question #1 is always physics, question #2 is always biology), then it may be helpful to include a text file that lists the order of the categories, with each new line denoting a new question category. In that case, this variable would indicate the path to that file.
     - If no such file exists, then set this variable to `""` (an empty string).
 - player names to ignore: 
@@ -50,7 +48,7 @@ The report will generate a total of 17 different reports, each one in its own ta
         - TUH: tossups heard
         - #buzz: the total number of times a player buzzed
         - %buzz: the percentage of tossups heard a player buzzed on
-        - #I: the percentage of a player's buzzes that were interrupts
+        - %I: the percentage of a player's buzzes that were interrupts
         - 4I/-4: the number of interrupt correct buzzes divided by the number of interrupt incorrect buzzes. Note: this statistic will not appear if "4I" is not supported
         - 4s/-4: the number of correct buzzes (including both interrupts and non-interrupts) divided by the number of interrupt incorrect buzzes
         - P/TUH: the avergae number of points a player gets per tossup they hear

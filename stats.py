@@ -124,11 +124,11 @@ for filename in os.listdir(directory):
                         player_stats[player]['TUH'] += int(cell)
 
                 # category the question was in
-                if json_data['subject order directory'] == '':
+                if json_data['category order filepath'] == '':
                     cat = get_category(str(game[i, 1]))
                     index = get_code_index(cell)
                 else:
-                    cat = get_category[open(json_data['subject order directory'], 'r').readLines()[
+                    cat = get_category[open(json_data['category order filepath'], 'r').readLines()[
                         i - question_row]]
                 if index != -1:
                     if not json_data['force questions to have categories'] or cat != 'n/a':

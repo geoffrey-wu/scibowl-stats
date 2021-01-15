@@ -5,7 +5,7 @@
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "track TUH": false,
-    "subject order directory": "",
+    "category order filepath": "",
     "player names to ignore": [
         "Player",
         "Bonus",
