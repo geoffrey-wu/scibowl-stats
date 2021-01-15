@@ -3,8 +3,7 @@
 A program to calculate science bowl stats based on science bowl scoresheets.
 
 # How to use
-
-First, install any dependencies. This can be done by running the following command in the terminal:
+First, install any python dependencies. The python version used is ``3.9.1``. Other Python 3 versions may work, but Python 2 will not work. This can be done by running the following command in the terminal:
 
 ``pip install -r requirements.txt``
 
@@ -25,13 +24,12 @@ The report will generate a total of 17 different reports, each one in its own ta
     - this sheet displays the number of bonuses heard and converted for each team in each category, as well as the % of bonuses converted
 - all, all_team, and two reports for each category (individual / team stats)
     - these spreadsheets provide detailed information about each player and team's performance, including the number of correct questions, the number of interrupt incorrects, and points per game. Here are what each of the columns mean:
-        - Player: the name of the player/team
+        - Player/Team: the name of the player/team
         - GP: games played
         - 4I: number of questions where a player/team interrupted a question correctly. Note: this column will not exist if the scoresheets that you use do not support this
         - 4: number of questions a player does not interrupt but gets correct. Note: if "4I" is not supported, then this stat tracks the total number of questions correct, regardless of interrupt
         - -4: number of questions where a player interrupted incorrectly
-        - X1: number of times where a player was the first person to buzz incorrectly *after* the question was completely read. Note: if "4I" is not supported, then neither is "X2", and therefore this stat will track the total number of non-interrupt incorrect buzzes, regardless of the players that buzzed before.
-        - X2: number of times where a player was the second person to buzz incorrectly *after* the question was completely read. Note: if "4I" is not supported, then neither is this statistic
+        - X: number of times where a player buzzed incorrectly *after* the question was completely read.
         - TUH: tossups heard
         - #buzz: the total number of times a player buzzed
         - %buzz: the percentage of tossups heard a player buzzed on
@@ -43,3 +41,4 @@ The report will generate a total of 17 different reports, each one in its own ta
         - ppg: the average number of points a player scores per game
 
 # Known issues
+There are currently no known issues!

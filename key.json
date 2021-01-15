@@ -22,21 +22,20 @@
             "1",
             "1.0"
         ],
-        "neg": [
+        "interrupt_incorrect": [
             "XX",
             "-4",
             "-4.0",
             "-1",
             "-1.0"
         ],
-        "incorrect1": [
-            "X1",
-            "X",
+        "incorrect": [
             "0",
-            "0.0"
-        ],
-        "incorrect2": [
-            "X2"
+            "0.0",
+            "X",
+            "X1",
+            "X2",
+            "X3"
         ]
     },
     "subjects": {
@@ -59,6 +58,7 @@
             "energy"
         ],
         "ess": [
+            "earth",
             "earth and space",
             "es",
             "ess"

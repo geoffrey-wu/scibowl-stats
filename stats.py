@@ -37,12 +37,10 @@ def get_code_index(cell):
         return 0
     elif cell in codes['correct']:
         return 1
-    elif cell in codes['neg']:
+    elif cell in codes['interrupt_incorrect']:
         return 2
-    elif cell in codes['incorrect1']:
+    elif cell in codes['incorrect']:
         return 3
-    elif cell in codes['incorrect2']:
-        return 4
     return -1
 
 
@@ -167,8 +165,7 @@ for cat in cats:
         '4I',       # interrupt correct
         '4',        # correct (but no interrupt)
         '-4',       # interrupt incorrect
-        'X1',       # not interrupt, first wrong buzz
-        'X2',       # not interrupt, second wrong buzz
+        'X',        # not interrupt, wrong buzz
         'TUH',      # tossups heard
         '#buzz',    # number of total buzzes
         '%buzz',    # percent of tossups heard that the player buzzed
@@ -191,7 +188,7 @@ for team in teams:
     team_to_number[team] = i
     i += 1
     for cat in cats:
-        team_data = [0]*16
+        team_data = [0]*len(team_tu_stats[cat][0])
         team_data[0] = team
         team_tu_stats[cat].append(team_data)
 
@@ -220,7 +217,7 @@ for player in player_stats:
         continue
 
     for cat in cats:
-        fourI, four, neg, x1, x2 = player_stats[player][cat]
+        fourI, four, neg, x1 = player_stats[player][cat]
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
@@ -246,7 +243,7 @@ for player in player_stats:
             }[cat])
 
         # number of times the player buzzed
-        num_buzz = fourI + four + neg + x1 + x2
+        num_buzz = fourI + four + neg + x1
 
         # percentage of tossups heard that the player buzzed on
         pct_buzz = str(round(100*num_buzz/TUH, 2)) + '%'
@@ -275,7 +272,6 @@ for player in player_stats:
             four,
             neg,
             x1,
-            x2,
             TUH,
             num_buzz,
             pct_buzz,
@@ -297,8 +293,7 @@ for player in player_stats:
         team_data[3] += four    # four
         team_data[4] += neg     # neg
         team_data[5] += x1      # X1
-        team_data[6] += x2      # x2
-        team_data[7] = max([team_data[7], TUH, round(team_data[1] * {
+        team_data[6] = max([team_data[6], TUH, round(team_data[1] * {
             'all': 23,
             'bio': 4,
             'chem': 4,
@@ -307,16 +302,16 @@ for player in player_stats:
             'math': 4,
             'physics': 4
         }[cat])])  # TUH
-        team_data[8] += num_buzz  # number of buzzes
-        team_data[9] = str(
-            round(100*team_data[8]/team_data[7], 2)) + '%'  # pct_buzz
-        team_data[10] = 0  # pct_I
-        team_data[11] = 0  # fourI_neg
-        team_data[12] = 'inf' if team_data[4] == 0 else round(
+        team_data[7] += num_buzz  # number of buzzes
+        team_data[8] = str(
+            round(100*team_data[7]/team_data[6], 2)) + '%'  # pct_buzz
+        team_data[9] = 0  # pct_I
+        team_data[10] = 0  # fourI_neg
+        team_data[11] = 'inf' if team_data[4] == 0 else round(
             team_data[3]/team_data[4], 2)  # four_neg
-        team_data[14] += points  # points
-        team_data[13] = round(team_data[14]/team_data[7], 2)  # P_TUH
-        team_data[15] = round(team_data[14]/team_data[1], 2)  # ppg
+        team_data[13] += points  # points
+        team_data[12] = round(team_data[13]/team_data[6], 2)  # P_TUH
+        team_data[14] = round(team_data[13]/team_data[1], 2)  # ppg
 
 # compiles subject and bonus stats
 aggregate_subject = [[
@@ -352,7 +347,7 @@ for player in player_stats:
         continue
     team_data = [player, GP]
     for cat in cats:  # append the points per game for that category
-        fourI, four, neg, x1, x2 = player_stats[player][cat]
+        fourI, four, neg, x1 = player_stats[player][cat]
         team_data.append(round(4*(fourI + four - neg)/GP, 2))
 
     aggregate_subject.append(team_data)
@@ -391,23 +386,8 @@ for team in team_bonus_stats:
 # delete all columns which rely on this data
 if json_data['has interrupt corrects'] == False:
     for cat in cats:
-        cat_stats[cat] = np.delete(cat_stats[cat], [2, 6, 10, 11], axis=1)
-        team_tu_stats[cat] = np.delete(
-            team_tu_stats[cat], [2, 6, 10, 11], axis=1)
-
-
-def delete_empty_rows(array2):
-    rows_to_delete = []
-    for i in range(len(array2)):
-        if array2[i][1] in [0, '0', 0.0, '0.0']:
-            rows_to_delete.append(i)
-
-    return np.delete(array2, rows_to_delete, axis=0)
-
-
-# aggregate_subject_team = delete_empty_rows(aggregate_subject_team)
-# for cat in cats:
-#     team_tu_stats[cat] = delete_empty_rows(team_tu_stats[cat])
+        cat_stats[cat] = np.delete(cat_stats[cat], [2, 9, 10], axis=1)
+        team_tu_stats[cat] = np.delete(team_tu_stats[cat], [2, 9, 10], axis=1)
 
 
 def write_to_excel(writer, data, name):
