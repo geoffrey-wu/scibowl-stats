@@ -1,16 +1,16 @@
 A program to calculate science bowl stats based on science bowl scoresheets.
 
 # How to use
-First, install any python dependencies. The python version used is ``3.9.1``. Other Python 3 versions may work, but Python 2 will not work. This can be done by running the following command in the terminal:
+First, install any python dependencies. The python version used is `3.9.1`. Other Python 3 versions may work, but Python 2 will not work. This can be done by running the following command in the terminal:
 
-`pip install -r requirements.txt`
+```pip install -r requirements.txt```
 
-Next, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in ``key.json`` to the path of the score sheets (note: this path can be relative or absolute). 
+Next, add the folder containing the scoresheets (which must be in microsoft excel files) to this directory. Update the "directory" variable in `key.json` to the path of the score sheets (note: this path can be relative or absolute). 
 
-Running the file ``stats.py`` will generate all the stat reports in a single Microsoft Excel spreadsheet. Python files can be run by typing the name of the file, like this: `python stats.py`
+Running the file `stats.py` will generate all the stat reports in a single Microsoft Excel spreadsheet. Python files can be run by typing the name of the file, like this: `python stats.py`
 
 # Options
-The following options can be changed in ``key.json``:
+The following options can be changed in `key.json`:
 - directory: stores the filepath to the folder with the scoresheets
 - rosters: stores the filepath to the plaintext file with the rosters, which is a comma-seperated file with the name of the player, followed by the name of their team
 - force questions to have categories: (recommended: `false`)

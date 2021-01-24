@@ -1,6 +1,6 @@
 {
     "directory": "2020-21 season\\Discord",
-    "rosters": "",
+    "rosters": "wisc rosters.txt",
     "force questions to have categories": false,
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
