@@ -1,16 +1,26 @@
 {
-    "directory": "2020-21 season\\Discord",
-    "rosters": "wisc rosters.txt",
+    "directory": "Results",
+    "rosters": "",
     "force questions to have categories": false,
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "track TUH": false,
-    "category order filepath": "",
+    "category order filepath": "subject order.txt",
     "player names to ignore": [
         "Player",
         "Bonus",
         "Score",
-        "Unnamed"
+        "Unnamed",
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "A5",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "B5"
     ],
     "codes": {
         "interrupt_correct": [
