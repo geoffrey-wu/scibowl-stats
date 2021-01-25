@@ -2,10 +2,10 @@
 import csv
 import json
 import os
+import re
 
 import numpy as np
 import pandas as pd
-
 
 with open('key.json') as f:
     json_data = json.load(f)
@@ -76,84 +76,94 @@ for team in rosters.values():
         for cat in cats:
             team_bonus_stats[team][cat] = [0, 0]
 
-# reads all of the spreadsheets in the given folder and reads the data in each of the files
-for filename in os.listdir(directory):
-    print(filename)
+# reads all of the spreadsheets in the given folder and subfolders and reads the data in each of the files
+for (dirpath, dirnames, filenames) in os.walk(directory):
+    for filename in filenames:
+        filepath = dirpath + '/' + filename
+        print(filepath)
+        for game in pd.read_excel(filepath, sheet_name=None).values():
+            # converts the pandas dataframe to a np.array
+            game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
+            teams_in_game = []
+            question_row = get_question_row(game)
 
-    for game in pd.read_excel(directory + '\\' + filename, sheet_name=None).values():
-        # converts the pandas dataframe to a np.array
-        game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
-        teams_in_game = []
-        question_row = get_question_row(game)
+            for j in 1 + np.array(range(game.shape[1] - 1)):
+                player = str(game[question_row - 1, j]).title().strip()
+                skip_player = player in ['', 'Nan']
+                for s in json_data['player names to ignore']:
+                    skip_player = skip_player or (s in player)
 
-        for j in 2 + np.array(range(game.shape[1] - 2)):
-            player = str(game[question_row - 1, j]).title().strip()
-            skip_player = player in ['', 'Nan']
-            for s in json_data['player names to ignore']:
-                skip_player = skip_player or (s in player)
+                if skip_player:
+                    continue
+                
+                player = re.sub('\[[^\]]*\]', '', player).strip()
 
-            if skip_player:
+                # create a new player if the player isn't already in the database
+                if player not in player_stats:
+                    player_stats[player] = {
+                        'GP': 0,
+                        'TUH': 0
+                    }
+                    for cat in cats:
+                        player_stats[player][cat] = len(codes)*[0]
+
+                # if the player is on a team, then add that
+                # player's team to the list of teams in the game
+                if player in rosters:
+                    team = rosters[player]
+                    if team not in teams_in_game:
+                        teams_in_game.append(team)
+
+                player_stats[player]['GP'] += 1
+
+                # for each player, look down their respective column
+                # to collect data on when they buzzed
+                for i in question_row + np.array(range(game.shape[0] - question_row)):
+                    # cell that records their buzz
+                    cell = str(game[i, j]).upper().strip()
+
+                    for string in [game[i, 0], game[i - 1, j]]:
+                        if str(string).upper().strip() in ['PLAYER TUH TU HEARD'] and cell != 'NAN':
+                            player_stats[player]['TUH'] += int(cell)
+                    
+                    # if str(game[i, 0]).upper().strip()  or str(game[i - 1, j]).upper().strip() in ['PLAYER TUH TU HEARD']:
+                    #     if cell != 'NAN':
+                    #         player_stats[player]['TUH'] += int(cell)        
+
+                    # category the question was in
+                    if json_data['category order filepath'] == '':
+                        cat = get_category(str(game[i, 1]))
+                    else:
+                        if i - question_row >= 23:
+                            continue
+                        cat = get_category(open(json_data['category order filepath'], 'r').readlines()[
+                            i - question_row])
+                    
+                    index = get_code_index(cell)
+                    if index != -1:
+                        if cat != 'n/a':
+                            player_stats[player]['all'][index] += 1
+                            player_stats[player][cat][index] += 1
+                        elif not json_data['force questions to have categories']:
+                            player_stats[player]['all'][index] += 1
+
+            # skip bonus stats if there are fewer than 2 teams
+            if len(teams_in_game) < 2:
                 continue
 
-            # create a new player if the player isn't already in the database
-            if player not in player_stats:
-                player_stats[player] = {
-                    'GP': 0,
-                    'TUH': 0
-                }
-                for cat in cats:
-                    player_stats[player][cat] = len(codes)*[0]
-
-            # if the player is on a team, then add that
-            # player's team to the list of teams in the game
-            if player in rosters:
-                team = rosters[player]
-                if team not in teams_in_game:
-                    teams_in_game.append(team)
-
-            player_stats[player]['GP'] += 1
-
-            # for each player, look down their respective column
-            # to collect data on when they buzzed
-            for i in question_row + np.array(range(game.shape[0] - question_row)):
-                # cell that records their buzz
-                cell = str(game[i, j]).upper().strip()
-
-                if str(game[i, 0]).upper().strip() in ['PLAYER TUH']:
-                    if cell != 'NAN':
-                        player_stats[player]['TUH'] += int(cell)
-
-                # category the question was in
-                if json_data['category order filepath'] == '':
-                    cat = get_category(str(game[i, 1]))
-                    index = get_code_index(cell)
-                else:
-                    cat = get_category[open(json_data['category order filepath'], 'r').readLines()[
-                        i - question_row]]
-                if index != -1:
-                    if cat != 'n/a':
-                        player_stats[player]['all'][index] += 1
-                        player_stats[player][cat][index] += 1
-                    elif not json_data['force questions to have categories']:
-                        player_stats[player]['all'][index] += 1
-
-        # skip bonus stats if there are fewer than 2 teams
-        if len(teams_in_game) < 2:
-            continue
-
-        n = 0
-        for j in range(game.shape[1]):
-            if 'bonus' in str(game[1, j]).lower() or 'bonus' in str(game[0, j]).lower():
-                for i in 2 + np.array(range(game.shape[0] - 2)):
-                    if str(game[i, j]).strip() in ['1', '1.0', '10', '10.0']:
-                        cat = get_category(str(game[i, 1]))
-                        if cat == 'n/a':
-                            continue
-                        team_bonus_stats[teams_in_game[n]]['all'][0] += 1
-                        team_bonus_stats[teams_in_game[n]][cat][0] += 1
-                n += 1
-        team_bonus_stats[teams_in_game[0]]['GP'] += 1
-        team_bonus_stats[teams_in_game[1]]['GP'] += 1
+            n = 0
+            for j in range(game.shape[1]):
+                if 'bonus' in str(game[1, j]).lower() or 'bonus' in str(game[0, j]).lower():
+                    for i in 2 + np.array(range(game.shape[0] - 2)):
+                        if str(game[i, j]).strip() in ['1', '1.0', '10', '10.0']:
+                            cat = get_category(str(game[i, 1]))
+                            if cat == 'n/a':
+                                continue
+                            team_bonus_stats[teams_in_game[n]]['all'][0] += 1
+                            team_bonus_stats[teams_in_game[n]][cat][0] += 1
+                    n += 1
+            team_bonus_stats[teams_in_game[0]]['GP'] += 1
+            team_bonus_stats[teams_in_game[1]]['GP'] += 1
 
 
 cat_stats = {}      # dictionary containing per-category stats
