@@ -3,3 +3,4 @@
 *.txt
 !requirements.txt
 !subject order.txt
+.DS_Store
