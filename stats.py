@@ -81,6 +81,9 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
     for filename in filenames:
         filepath = dirpath + '/' + filename
         print(filepath)
+        if filepath[-9:] == '.DS_Store':
+            continue
+
         for game in pd.read_excel(filepath, sheet_name=None).values():
             # converts the pandas dataframe to a np.array
             game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
@@ -131,6 +134,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     #         player_stats[player]['TUH'] += int(cell)        
 
                     # category the question was in
+                    cat = 0
                     if json_data['category order filepath'] == '':
                         cat = get_category(str(game[i, 1]))
                     else:
