@@ -288,8 +288,7 @@ for player in player_stats:
             continue
 
         team_data = team_tu_stats[cat][player_to_team_num(player)]  # team
-        team_data[1] = max(
-            [team_data[1], GP, bonus_stats[rosters[player]]['GP']])  # GP
+        team_data[1] = max([team_data[1], GP, bonus_stats[rosters[player]]['GP']])  # GP
         team_data[2] += fourI   # fourI
         team_data[3] += four    # four
         team_data[4] += neg     # neg
