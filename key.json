@@ -22,6 +22,15 @@
         "B4",
         "B5"
     ],
+    "cat per packet": {
+        "all": 23,
+        "bio": 4,
+        "chem": 4,
+        "energy": 3,
+        "ess": 4,
+        "math": 4,
+        "physics": 4
+    },
     "codes": {
         "interrupt_correct": [
             "4i"
@@ -47,15 +56,6 @@
             "x2",
             "x3"
         ]
-    },
-    "cat per packet": {
-        "all": 23,
-        "bio": 4,
-        "chem": 4,
-        "energy": 3,
-        "ess": 4,
-        "math": 4,
-        "physics": 4
     },
     "categories": {
         "all": [],
