@@ -63,7 +63,6 @@ if json_data['rosters'] != '':
         rosters[player] = team
 
 teams = [team for team in set(rosters.values())]
-print(teams)
 
 # dictionary containing per-player stats
 player_stats = {}
@@ -133,7 +132,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
 
                     # check if we have reached a tossups heard cell
                     for string in [game[i, 0], game[i - 1, j]]:
-                        if str(string).upper().strip() in ['PLAYER TUH TU HEARD'] and cell != 'NAN':
+                        if str(string).upper().strip() in 'PLAYER TUH TU HEARD' and cell != 'NAN':
                             player_stats[player]['TUH'] += int(cell)
 
                     # get the category the question was in
@@ -147,7 +146,6 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     # get what type of buzz was recorded (e.g. correct, interrupt)
                     index = get_code_index(cell)
 
-                    print(game[i, 1], i)
                     # add the buzz to the correct category
                     if index != -1:
                         if cat != 'n/a':
