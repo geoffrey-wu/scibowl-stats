@@ -9,8 +9,10 @@ import pandas as pd
 with open('key.json') as f:
     json_data = json.load(f)
 
+level = 'HS cats' if json_data['is high school'] else 'MS cats'
+
 # different subject categories
-cats = [cat for cat in json_data['categories'].keys()]
+cats = [cat for cat in json_data[level]['categories'].keys()]
 
 # file directory that contains all of the scoresheets
 directory = json_data['directory']
@@ -24,7 +26,7 @@ codes = json_data['codes']
 def get_category(category):
     category = str(category).lower().strip()
     for cat in cats:
-        if category in json_data['categories'][cat]:
+        if category in json_data[level]['categories'][cat]:
             return cat
     return 'n/a'
 
@@ -61,6 +63,7 @@ if json_data['rosters'] != '':
         rosters[player] = team
 
 teams = [team for team in set(rosters.values())]
+print(teams)
 
 # dictionary containing per-player stats
 player_stats = {}
@@ -143,6 +146,8 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
 
                     # get what type of buzz was recorded (e.g. correct, interrupt)
                     index = get_code_index(cell)
+
+                    print(game[i, 1], i)
                     # add the buzz to the correct category
                     if index != -1:
                         if cat != 'n/a':
@@ -242,7 +247,7 @@ for player in player_stats:
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
-        TUH = round(json_data['cat per packet'][cat] *
+        TUH = round(json_data[level]['cat per packet'][cat] *
                     (GP if json_data['track TUH'] else TUH_total/23))
 
         # number of times the player buzzed
@@ -294,7 +299,7 @@ for player in player_stats:
         team_data[4] += neg     # neg
         team_data[5] += x1      # X1
         team_data[6] = max([team_data[6], TUH, round(
-            team_data[1] * json_data['cat per packet'][cat])])  # TUH
+            team_data[1] * json_data[level]['cat per packet'][cat])])  # TUH
         team_data[7] += num_buzz  # number of buzzes
         team_data[8] = str(
             round(100*team_data[7]/team_data[6], 2)) + '%'  # pct_buzz
@@ -313,18 +318,34 @@ for cat in cats:
         bonus_stats[teams[i]][cat][1] += int(
             team_tu_stats[cat][i+1][2]) + int(team_tu_stats[cat][i+1][3])
 
+print(player_stats)
+
 # compiles subject and bonus stats
-header = [  # spreadsheet header
-    'Player',
-    'GP',
-    'ppg',
-    'bio',
-    'chem',
-    'energy',
-    'ess',
-    'math',
-    'physics'
-]
+
+# spreadsheet header
+if json_data['is high school']:
+    header = [  
+        'Player',
+        'GP',
+        'ppg',
+        'bio',
+        'chem',
+        'energy',
+        'ess',
+        'math',
+        'physics'
+    ]
+else:
+    header = [
+        'Player',
+        'GP',
+        'ppg',
+        'life science',
+        'energy',
+        'ess',
+        'math',
+        'physical science'
+    ]
 aggregate_subject = [[i for i in header]]
 aggregate_subject_team = [[i for i in header]]
 aggregate_subject_team[0][0] = 'Team'
@@ -386,6 +407,7 @@ if json_data['has interrupt corrects'] == False:
 def write_to_excel(writer, data, name):
     stat_sheet = pd.DataFrame(np.array(data))
     stat_sheet.to_excel(writer, sheet_name=name, header=None, index=False)
+
 
 
 # write all the data into spreadsheets

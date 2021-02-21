@@ -1,15 +1,17 @@
 {
-    "directory": "Results",
-    "rosters": "wisc rosters.txt",
-    "category directory": "subject order.txt",
-    "force questions to have categories": false,
+    "is high school": false,
+    "directory": "Scoresheets",
+    "rosters": "",
+    "category directory": "",
+    "force questions to have categories": true,
     "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "track TUH": false,
     "player names to ignore": [
-        "Player",
         "Bonus",
+        "Player",
         "Score",
+        "Subject",
         "Unnamed",
         "A1",
         "A2",
@@ -22,14 +24,43 @@
         "B4",
         "B5"
     ],
-    "cat per packet": {
-        "all": 23,
-        "bio": 4,
-        "chem": 4,
-        "energy": 3,
-        "ess": 4,
-        "math": 4,
-        "physics": 4
+    "HS cats": {
+        "cat per packet": {
+            "all": 23,
+            "bio": 4,
+            "chem": 4,
+            "energy": 3,
+            "ess": 4,
+            "math": 4,
+            "physics": 4
+        },
+        "categories": {
+            "all": [],
+            "bio":      ["b", "bio", "biology"],
+            "chem":     ["c", "ch", "che", "chem", "chemistry"],
+            "energy":   ["en", "ene", "energy"],
+            "ess":      ["earth", "earth and space", "es", "ess"],
+            "math":     ["m", "ma", "mat", "math"],
+            "physics":  ["p", "ph", "phy", "phys", "physics"]
+        }
+    },
+    "MS cats": {
+        "cat per packet": {
+            "all": 23,
+            "life science": 5,
+            "energy": 3,
+            "ess": 5,
+            "math": 5,
+            "physical science": 5
+        },
+        "categories": {
+            "all": [],
+            "life science":     ["ls"],
+            "energy":           ["e"],
+            "ess":              ["es", "ess"],
+            "math":             ["m"],
+            "physical science": ["ps"]
+        }
     },
     "codes": {
         "interrupt_correct": [
@@ -55,45 +86,6 @@
             "x1",
             "x2",
             "x3"
-        ]
-    },
-    "categories": {
-        "all": [],
-        "bio": [
-            "b",
-            "bio",
-            "biology"
-        ],
-        "chem": [
-            "c",
-            "ch",
-            "che",
-            "chem",
-            "chemistry"
-        ],
-        "energy": [
-            "en",
-            "ene",
-            "energy"
-        ],
-        "ess": [
-            "earth",
-            "earth and space",
-            "es",
-            "ess"
-        ],
-        "math": [
-            "m",
-            "ma",
-            "mat",
-            "math"
-        ],
-        "physics": [
-            "p",
-            "ph",
-            "phy",
-            "phys",
-            "physics"
         ]
     }
 }
