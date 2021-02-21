@@ -3,14 +3,14 @@ A program to calculate science bowl stats based on science bowl scoresheets.
 # How to use
 First, put all of the scoresheets into one folder, and then place the folder in the same folder that this repository is in. Then, go to the `key.json` file and change the "directory" variable to the relative filepath of the folder. After that, you can run the `stats.py` file to generate the stats.
 
-The python version used is `3.9.1`. You may need to install python dependencies. This can be done by running the following command in the terminal:
+The python version used is `3.9.1`. You may need to install python dependencies before running the program. This can be done by running the following command in the terminal:
 
 ```pip install -r requirements.txt```
 
 # JSON Options
 The following options can be changed in `key.json`. The default setting for each boolean parameter is `false`.
 - directory: stores the filepath to the folder with the scoresheets
-- rosters: stores the filepath to the plaintext file with the rosters, which is a comma-seperated file with the name of the player, followed by the name of their team
+- rosters (default: `""`): stores the filepath to the plaintext file with the rosters, which is a comma-seperated file with the name of the player, followed by the name of their team
 - category directory: (default: `""`)
     - If every packet has the same category order (e.g. question #1 is always physics, question #2 is always biology), then it may be helpful to include a text file that lists the order of the categories, with each new line denoting a new question category. In that case, this variable would indicate the path to that file.
     - If no such file exists, then set this variable to `""` (an empty string).
@@ -24,7 +24,7 @@ The following options can be changed in `key.json`. The default setting for each
     - If set to `true`, then the program will try to track the number of times a player interrupted correctly by looking for an "interrupt correct" symbol in the json file.
     - If set to `false`, then the program does not track this statistic
 - track TUH:
-    - If set to `true`, then the program will attempt to detect a row on the spreadsheet that has the number of tossups each player heard. 
+    - If set to `true`, then the program will attempt to detect a row on the spreadsheet that has the number of tossups each player heard. __It is highly recommended to set "force questions to have categories" to true as well if this is set to true; otherwise, TUH data may get mistaken for buzz data.__
     - If set to `false`, then the program will assume that each player plays a full game in each spreadsheet that they appear in.
 - player names to ignore: 
     - Often times, other strings (like "Bonus" or "Question") are interpreted as player names. Any player names that contain one or more of the strings in this array as substrings will be ignored and assumed to not be a player. 
