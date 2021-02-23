@@ -11,6 +11,8 @@ The python version used is `3.9.1`. You may need to install python dependencies 
 The following options can be changed in `key.json`. The default setting for each boolean parameter is `false`.
 - directory: stores the filepath to the folder with the scoresheets
 - rosters (default: `""`): stores the filepath to the plaintext file with the rosters, which is a comma-seperated file with the name of the player, followed by the name of their team
+- force players onto rosters: 
+    - If set to `true`, then if a roster is provided and a player name is not on it, then the program will attempt to find the name with the smallest Levenshtein distance in the roster and use that name.
 - category directory: (default: `""`)
     - If every packet has the same category order (e.g. question #1 is always physics, question #2 is always biology), then it may be helpful to include a text file that lists the order of the categories, with each new line denoting a new question category. In that case, this variable would indicate the path to that file.
     - If no such file exists, then set this variable to `""` (an empty string).
