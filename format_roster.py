@@ -1,6 +1,6 @@
 
 
-filepath = 'wisc rosters.txt'
+filepath = 'dbhsst rosters.txt'
 roster = []
 
 for line in open(filepath, 'r'):
