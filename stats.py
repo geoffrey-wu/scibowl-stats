@@ -273,10 +273,6 @@ def player_to_team_num(player):
 
 # compiles per-category stats from the per-player stats
 for player in player_stats:
-    # if a player has no stats, don't include them in the stat report
-    if json_data['skip players with no buzzes'] and sum(player_stats[player]['all']) == 0:
-        continue
-
     if json_data['track TUH']:
         TUH_total = player_stats[player]['TUH']   # tossups heard
         GP = round(TUH_total/23, 2)

@@ -5,7 +5,6 @@
     "force players onto rosters": true,
     "category directory": "",
     "force questions to have categories": true,
-    "skip players with no buzzes": false,
     "has interrupt corrects": false,
     "track TUH": true,
     "player names to ignore": [
