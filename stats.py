@@ -6,20 +6,62 @@ import re
 import numpy as np
 import pandas as pd
 
+# computes the Levenshtein distance between two strings a and b
+def ldist(a, b):
+    size_x = len(a) + 1
+    size_y = len(b) + 1
+    matrix = np.zeros((size_x, size_y))
+    for x in range(size_x):
+        matrix[x, 0] = x
+    for y in range(size_y):
+        matrix[0, y] = y
+
+    for x in range(1, size_x):
+        for y in range(1, size_y):
+            if a[x-1] == b[y-1]:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1],
+                    matrix[x, y-1] + 1
+                )
+            else:
+                matrix[x, y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1] + 1,
+                    matrix[x, y-1] + 1
+                )
+
+    return (matrix[size_x - 1, size_y - 1])
+
+# finds the element in `array` that best matches a given string `s` based on Levenshtein distance
+def find_closest_match(s, array):
+    bestWord = ''
+    bestDistance = 1000000
+
+    for string in array:
+        if (ldist(s, string) < bestDistance):
+            bestDistance = ldist(s, string)
+            bestWord = string
+
+    return bestWord
+
+
+
+# initialize variables from json file
 with open('key.json') as f:
     json_data = json.load(f)
 
-level = 'HS cats' if json_data['is high school'] else 'MS cats'
+    level = 'HS cats' if json_data['is high school'] else 'MS cats'
 
-# different subject categories
-cats = [cat for cat in json_data[level]['categories'].keys()]
+    # different subject categories
+    cats = [cat for cat in json_data[level]['categories'].keys()]
 
-# file directory that contains all of the scoresheets
-directory = json_data['directory']
+    # file directory that contains all of the scoresheets
+    directory = json_data['directory']
 
-# codes for different buzz results
-# e.g. interrupt incorrect, interrupt correct
-codes = json_data['codes']
+    # codes for different buzz results
+    # e.g. interrupt incorrect, interrupt correct
+    codes = json_data['codes']
 
 
 # given a string, returns the question category
@@ -82,7 +124,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
         filepath = dirpath + '/' + filename
         print(filepath)
 
-        # skip files that are do not have an excel file extension
+        # skip files that do not have an excel file extension
         if filepath[-5:] != '.xlsx':
             continue
 
@@ -97,15 +139,18 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                 player = str(game[question_row - 1, j]).title().strip()
 
                 # skip any player name that isn't valid
-                skip_player = player in ['', 'Nan']
-                for s in json_data['player names to ignore']:
-                    skip_player = skip_player or (s in player)
-                if skip_player:
+                if player in json_data['player names to ignore']:
                     continue
 
-                # regex that removes brackets [] from a player's name
+                # regex that removes anything enclosed in brackets [] from a player's name
                 player = re.sub('\[[^\]]*\]', '', player).strip()
 
+                if (json_data['force players onto rosters']):
+                    player2 = player
+                    player = find_closest_match(player, rosters.keys())
+                    if (ldist(player, player2) > 0):
+                        print('Changed', player2, 'to', player)
+                
                 # create a new player if the player isn't already in the database
                 if player not in player_stats:
                     player_stats[player] = {
@@ -163,15 +208,18 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
             for j in range(game.shape[1]):
                 if 'bonus' in str(game[1, j]).lower() or 'bonus' in str(game[0, j]).lower():
                     for i in range(game.shape[0]):
-                        # if the team got the bonus right
+                        # check if the team got the bonus right
                         if str(game[i, j]).strip() in ['1', '1.0', '10', '10.0']:
+
+                            # get which category the bonus was in
                             if json_data['category directory'] == '':
                                 cat = game[i, 1]
                             else:
                                 cat = open(json_data['category directory'], 'r').readlines()[
                                     (i - question_row) % 23]
                             cat = get_category(cat)
-                            if cat == 'n/a':
+
+                            if cat == 'n/a':  # only generate bonus stats if the question has a category
                                 continue
                             bonus_stats[teams_in_game[n]]['all'][0] += 1
                             bonus_stats[teams_in_game[n]][cat][0] += 1
@@ -316,7 +364,6 @@ for cat in cats:
         bonus_stats[teams[i]][cat][1] += int(
             team_tu_stats[cat][i+1][2]) + int(team_tu_stats[cat][i+1][3])
 
-print(player_stats)
 
 # compiles subject and bonus stats
 
@@ -349,7 +396,7 @@ aggregate_subject_team = [[i for i in header]]
 aggregate_subject_team[0][0] = 'Team'
 
 for i in range(len(teams)):
-    aggregate_subject_team.append([0]*9)
+    aggregate_subject_team.append([0]*len(header))
 
 for player in player_stats:
     GP = player_stats[player]['GP']
