@@ -132,7 +132,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
             # converts the pandas dataframe to a np.array
             game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
 
-            teams_in_game = []  # array that contains the list of teams in the game
+            teams_in_game = []  # contains the list of teams in the game
             question_row = get_question_row(game)
 
             for j in 1 + np.array(range(game.shape[1] - 1)):
@@ -289,7 +289,7 @@ for player in player_stats:
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
-        TUH = round(json_data[level]['cat per packet'][cat] *
+        TUH = round(json_data[level]['per packet'][cat] *
                     (GP if json_data['track TUH'] else TUH_total/23))
 
         # number of times the player buzzed
@@ -341,7 +341,7 @@ for player in player_stats:
         team_data[4] += neg     # neg
         team_data[5] += x1      # X1
         team_data[6] = max([team_data[6], TUH, round(
-            team_data[1] * json_data[level]['cat per packet'][cat])])  # TUH
+            team_data[1] * json_data[level]['per packet'][cat])])  # TUH
         team_data[7] += num_buzz  # number of buzzes
         team_data[8] = str(
             round(100*team_data[7]/team_data[6], 2)) + '%'  # pct_buzz
@@ -365,7 +365,7 @@ for cat in cats:
 
 # spreadsheet header
 if json_data['is high school']:
-    header = [  
+    header = [
         'Player',
         'GP',
         'ppg',
@@ -448,7 +448,6 @@ if json_data['has interrupt corrects'] == False:
 def write_to_excel(writer, data, name):
     stat_sheet = pd.DataFrame(np.array(data))
     stat_sheet.to_excel(writer, sheet_name=name, header=None, index=False)
-
 
 
 # write all the data into spreadsheets

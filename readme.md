@@ -18,10 +18,7 @@ The following options can be changed in `key.json`. The default setting for each
     - If no such file exists, then set this variable to `""` (an empty string).
 - force questions to have categories:
     - If set to `true`, then the program will attempt to detect a category for each question, either by having the category in the column adjacent to the question number column or by having a "subject order" file. __Any question that does NOT have a category will be ignored and not included in the final stat report.__
-    - If set to `false`, then which category a question is in will still be tracked, but there is no requirement for questions to have a subject, and questions without a category will still be tracked. 
-- skip players with no buzzes:
-    - If set to `true`, then don't track stats for players with 0 buzzes.
-    - If set to `false`, include stats for *all* players, regardless of how many buzzes they have.
+    - If set to `false`, then which category a question is in will still be tracked, but there is no requirement for questions to have a subject, and questions without a category will still be tracked.
 - has interrupt corrects:
     - If set to `true`, then the program will try to track the number of times a player interrupted correctly by looking for an "interrupt correct" symbol in the json file.
     - If set to `false`, then the program does not track this statistic

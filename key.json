@@ -28,7 +28,7 @@
         "B5"
     ],
     "HS cats": {
-        "cat per packet": {
+        "per packet": {
             "all": 23,
             "bio": 4,
             "chem": 4,
@@ -48,7 +48,7 @@
         }
     },
     "MS cats": {
-        "cat per packet": {
+        "per packet": {
             "all": 23,
             "life science": 5,
             "energy": 3,
@@ -59,9 +59,9 @@
         "categories": {
             "all": [],
             "life science":     ["ls"],
-            "energy":           ["e"],
+            "energy":           ["e", "en", "ene", "energy"],
             "ess":              ["es", "ess"],
-            "math":             ["m"],
+            "math":             ["m", "ma", "mat", "math"],
             "physical science": ["ps"]
         }
     },
