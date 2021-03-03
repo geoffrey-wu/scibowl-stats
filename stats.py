@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 
 # computes the Levenshtein distance between two strings a and b
+
+
 def ldist(a, b):
     size_x = len(a) + 1
     size_y = len(b) + 1
@@ -33,6 +35,7 @@ def ldist(a, b):
 
     return (matrix[size_x - 1, size_y - 1])
 
+
 # finds the element in `array` that best matches a given string `s` based on Levenshtein distance
 def find_closest_match(s, array):
     bestWord = ''
@@ -44,7 +47,6 @@ def find_closest_match(s, array):
             bestWord = string
 
     return bestWord
-
 
 
 # initialize variables from json file
@@ -150,7 +152,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     player = find_closest_match(player, rosters.keys())
                     if (ldist(player, player2) > 0):
                         print('Changed', player2, 'to', player)
-                
+
                 # create a new player if the player isn't already in the database
                 if player not in player_stats:
                     player_stats[player] = {
@@ -175,7 +177,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     # cell that records their buzz
                     cell = str(game[i, j]).upper().strip()
 
-                    # check if we have reached a tossups heard cell
+                    # check if we have reached a "tossups heard" cell
                     for string in [game[i, 0], game[i - 1, j]]:
                         if str(string).upper().strip() in 'PLAYER TUH TU HEARD' and cell != 'NAN':
                             player_stats[player]['TUH'] += int(cell)
@@ -335,7 +337,8 @@ for player in player_stats:
             continue
 
         team_data = team_tu_stats[cat][player_to_team_num(player)]  # team
-        team_data[1] = max([team_data[1], GP, bonus_stats[rosters[player]]['GP']])  # GP
+        team_data[1] = max(
+            [team_data[1], GP, bonus_stats[rosters[player]]['GP']])  # GP
         team_data[2] += fourI   # fourI
         team_data[3] += four    # four
         team_data[4] += neg     # neg
