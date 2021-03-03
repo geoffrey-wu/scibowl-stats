@@ -1,10 +1,13 @@
 {
     "is high school": false,
     "directory": "Scoresheets",
+    
     "rosters": "dbhsst rosters.txt",
     "force players onto rosters": true,
+
     "category directory": "",
     "force questions to have categories": true,
+
     "has interrupt corrects": false,
     "track TUH": true,
     "player names to ignore": [
@@ -38,7 +41,7 @@
             "physics": 4
         },
         "categories": {
-            "all": [],
+            "all":      [],
             "bio":      ["b", "bio", "biology"],
             "chem":     ["c", "ch", "che", "chem", "chemistry"],
             "energy":   ["en", "ene", "energy"],
@@ -57,7 +60,7 @@
             "physical science": 5
         },
         "categories": {
-            "all": [],
+            "all":              [],
             "life science":     ["ls"],
             "energy":           ["e", "en", "ene", "energy"],
             "ess":              ["es", "ess"],
