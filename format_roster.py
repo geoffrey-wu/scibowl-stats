@@ -1,10 +1,10 @@
 
 
-filepath = 'dbhsst rosters.txt'
+filepath = 'rosters.txt'
 roster = []
 
 for line in open(filepath, 'r'):
-    l = line.split(';')
+    l = line.split('	')
     print(l)
     team = l[0].strip()
     for player in l[1:]:
