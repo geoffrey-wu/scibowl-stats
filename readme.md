@@ -1,11 +1,38 @@
 A program to calculate science bowl stats based on science bowl scoresheets.
 
-# How to use
-First, put all of the scoresheets into one folder, and then place the folder in the same folder that this repository is in. Then, go to the `key.json` file and change the "directory" variable to the relative filepath of the folder. After that, you can run the `stats.py` file to generate the stats.
+# Usage
+Put the scoresheets into one folder, and place it in the same folder that this repository is in. Go to the `key.json` file and change the "directory" variable to the name of the folder with the scoresheets.
 
-The python version used is `3.9.1`. You may need to install python dependencies before running the program. This can be done by running the following command in the terminal:
+- Note: the scoresheets **must** be excel files.
+
+Then, run `stats.py` to generate the stats.
+
+The python version used is `3.9.1`. You may need to use `python3` instead of `python` in the terminal. You can download the latest version of python here: https://www.python.org/downloads/. 
+
+You may need to install python dependencies before running the program. To do so, run the following in your terminal:
 
 ```pip install -r requirements.txt```
+
+# Rosters
+If you're using a roster, then paste it into `roster.txt` as a series of names and teams separated by commas. An example is shown in `roster.txt`.
+
+If you have roster data displayed like in the below image, then you can select all of the data (not including the header) and paste into `roster.txt`. Then, run `format_roster.py`. This program will automatically populate `roster.txt` with correctly formatted data; go ahead and delete the old data in the file and your roster will be all set.
+
+![](roster_example.png)
+
+# Stats Key
+- GP: games played (note: this always assumes 23 tossup games)
+- 4I: number of questions interrupted correctly. Note: this column will not exist if the scoresheets that you use do not support this
+- 4: number of questions correct that were not interrupts. Note: if "4I" is not supported, then this stat tracks the total number of questions correct, regardless of interrupt
+- -4: number of questions interrupted incorrectly
+- X: number of incorrect buzzes *after* the question was completely read.
+- TUH: tossups heard
+- %I: the percentage of a player's buzzes that were interrupts
+- 4I/-4: the number of interrupt correct buzzes divided by the number of interrupt incorrect buzzes. Note: this statistic will not appear if "4I" is not supported
+- 4s/-4: number of correct buzzes divided by the number of interrupt incorrect buzzes
+- P/TUH: average number of points a player scores per tossup they hear
+- Points: total number of points scored, where interrupt incorrect buzzes count for -4 points for that player (as opposed to DOE rules, which give 4 points to the other team)
+- PPG: the average number of points a player scores per game
 
 # JSON Options
 The following options can be changed in `key.json`. The default setting for each boolean parameter is `false`.
@@ -31,26 +58,7 @@ The following options can be changed in `key.json`. The default setting for each
 - codes: the different cell values that indicate each type of buzz
 - categories: the six DOE categories (biology, chemistry, etc.) as well as the different symbols that indicate those categories
 
-# Interpreting the Reports
-The report will generate a total of 17 different reports, each one in its own tab. Here are the 17:
-- subject, subject_team
-    - these two spreadsheets display a simple overview of each individial and team's points per game in each category
-- bonus
-    - this sheet displays the number of bonuses heard and converted for each team in each category, as well as the % of bonuses converted
-- all, all_team, and two reports for each category (individual / team stats)
-    - these spreadsheets provide detailed information about each player and team's performance, including the number of correct questions, the number of interrupt incorrects, and points per game. Here are what each of the columns mean:
-        - Player/Team: the name of the player/team
-        - GP: games played
-        - 4I: number of questions where a player/team interrupted a question correctly. Note: this column will not exist if the scoresheets that you use do not support this
-        - 4: number of questions a player does not interrupt but gets correct. Note: if "4I" is not supported, then this stat tracks the total number of questions correct, regardless of interrupt
-        - -4: number of questions where a player interrupted incorrectly
-        - X: number of times where a player buzzed incorrectly *after* the question was completely read.
-        - TUH: tossups heard
-        - #buzz: the total number of times a player buzzed
-        - %buzz: the percentage of tossups heard a player buzzed on
-        - %I: the percentage of a player's buzzes that were interrupts
-        - 4I/-4: the number of interrupt correct buzzes divided by the number of interrupt incorrect buzzes. Note: this statistic will not appear if "4I" is not supported
-        - 4s/-4: the number of correct buzzes (including both interrupts and non-interrupts) divided by the number of interrupt incorrect buzzes
-        - P/TUH: the avergae number of points a player gets per tossup they hear
-        - Pts: the total number of points the player has scored, where interrupt incorrect buzzes count for -4 points for that player (as opposed to DOE rules, which give 4 points to the other team)
-        - PPG: the average number of points a player scores per game
+# Code
+This project exclusively uses python 3. I used the csv and pandas packages to work with excel files. 
+
+Feel free to make a pull request or open an issue!
