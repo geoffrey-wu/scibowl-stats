@@ -2,7 +2,7 @@
     "is high school": false,
     "directory": "Scoresheets",
     
-    "rosters": "dbhsst rosters.txt",
+    "rosters": "roster.txt",
     "force players onto rosters": true,
 
     "category directory": "",
@@ -61,11 +61,11 @@
         },
         "categories": {
             "all":              [],
-            "life science":     ["ls"],
+            "life science":     ["l", "ls"],
             "energy":           ["e", "en", "ene", "energy"],
             "ess":              ["es", "ess"],
             "math":             ["m", "ma", "mat", "math"],
-            "physical science": ["ps"]
+            "physical science": ["p", "ps"]
         }
     },
     "codes": {

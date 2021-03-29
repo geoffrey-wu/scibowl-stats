@@ -6,9 +6,8 @@ import re
 import numpy as np
 import pandas as pd
 
+
 # computes the Levenshtein distance between two strings a and b
-
-
 def ldist(a, b):
     size_x = len(a) + 1
     size_y = len(b) + 1
@@ -57,7 +56,6 @@ with open('key.json') as f:
 
     # different subject categories
     cats = [cat for cat in json_data[level]['categories'].keys()]
-
     # file directory that contains all of the scoresheets
     directory = json_data['directory']
 
@@ -145,7 +143,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     continue
 
                 # regex that removes anything enclosed in brackets [] from a player's name
-                player = re.sub('\[[^\]]*\]', '', player).strip()
+                # player = re.sub('\[[^\]]*\]', '', player).strip()
 
                 if (json_data['force players onto rosters']):
                     player2 = player
