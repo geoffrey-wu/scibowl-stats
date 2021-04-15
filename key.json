@@ -1,21 +1,22 @@
 {
-    "is high school": false,
+    "is high school": true,
     "directory": "Scoresheets",
     
-    "rosters": "roster.txt",
-    "force players onto rosters": true,
+    "rosters": "",
+    "force players onto rosters": false,
 
     "category directory": "",
-    "force questions to have categories": true,
+    "force questions to have categories": false,
 
     "has interrupt corrects": false,
-    "track TUH": true,
+    "track TUH": false,
     "player names to ignore": [
         "",
         "Nan",
         "Bonus",
         "Not Present",
         "Player",
+        "Reader",
         "Score",
         "Subject",
         "Unnamed",
