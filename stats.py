@@ -135,6 +135,9 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
             teams_in_game = []  # contains the list of teams in the game
             question_row = get_question_row(game)
 
+            if question_row == -1:
+                continue
+
             for j in 1 + np.array(range(game.shape[1] - 1)):
                 player = str(game[question_row - 1, j]).title().strip()
 
@@ -417,7 +420,7 @@ for i in range(len(teams)):
 
 # converts bonus_stats, a dictionary, to bonus_stats_array,
 # a 2D array used for saving to an excel spreadsheet
-team_bonus_stats_array = [['team', 'GP']]
+team_bonus_stats_array = [['Team', 'GP']]
 for cat in cats:
     team_bonus_stats_array[0].append(cat)
     team_bonus_stats_array[0].append('')
