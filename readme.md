@@ -1,31 +1,30 @@
 A program to calculate science bowl stats based on science bowl scoresheets.
 
 # Usage
-Put the scoresheets into one folder, and place it in the same folder that this repository is in. Go to the `key.json` file and change the "directory" variable to the name of the folder with the scoresheets.
-
+1. Put the scoresheets into a folder called `Scoresheets` and place it in the same folder that this repository is in.
 - Note: the scoresheets **must** be excel files.
 
-Then, run `stats.py` to generate the stats.
-
-The python version used is `3.9.1`. You may need to use `python3` instead of `python` in the terminal. You can download the latest version of python here: https://www.python.org/downloads/. 
-
-You may need to install python dependencies before running the program. To do so, run the following in your terminal:
-
-```pip install -r requirements.txt```
-
-# Rosters
-If you're using a roster, then paste it into `roster.txt` as a series of names and teams separated by commas. An example is shown in `roster.txt`.
-
-If you have roster data displayed like in the below image, then you can select all of the data (not including the header) and paste into `roster.txt`. Then, run `format_roster.py`. This program will automatically populate `roster.txt` with correctly formatted data; go ahead and delete the old data in the file and your roster will be all set.
+2. If you're using a roster to generate team stats, paste the roster into `rosters.txt` as a series of names and teams separated by commas. An example is shown in `rosters.txt`.
+  - If you have roster data displayed like in the below image, then you can select all of the data (not including the header) and paste into `roster.txt`.
+  - Then, run `format_roster.py`. This program will automatically populate `roster.txt` with correctly formatted data.
 
 ![](roster_example.png)
+
+3. Check the `key.json` file to make select all of the options you want (see [JSON options](#json-options)).
+4. Run `stats.py` to generate the stats 
+
+Any python version ≥ 3.5 should work (to import the typing module). You may need to use `python3` instead of `python` in the terminal. 
+
+You will need to install python dependencies before running the program. Run the following in your terminal:
+
+```pip3 install -r requirements.txt```
 
 # Stats Key
 - GP: games played (note: this always assumes 23 tossup games)
 - 4I: number of questions interrupted correctly. Note: this column will not exist if the scoresheets that you use do not support this
-- 4: number of questions correct that were not interrupts. Note: if "4I" is not supported, then this stat tracks the total number of questions correct, regardless of interrupt
-- -4: number of questions interrupted incorrectly
-- X: number of incorrect buzzes *after* the question was completely read.
+- 4s: number of questions correct that were not interrupts. Note: if "4I" is not supported, then this stat tracks the total number of questions correct, regardless of interrupt
+- 0s: number of incorrect buzzes *after* the question was completely read.
+- -4s: number of questions interrupted incorrectly
 - TUH: tossups heard
 - %I: the percentage of a player's buzzes that were interrupts
 - 4I/-4: the number of interrupt correct buzzes divided by the number of interrupt incorrect buzzes. Note: this statistic will not appear if "4I" is not supported
@@ -59,6 +58,4 @@ The following options can be changed in `key.json`. The default setting for each
 - categories: the six DOE categories (biology, chemistry, etc.) as well as the different symbols that indicate those categories
 
 # Code
-This project exclusively uses python 3. I used the csv and pandas packages to work with excel files. 
-
-Feel free to make a pull request or open an issue!
+Feel free to make a pull request or open an issue.
