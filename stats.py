@@ -279,9 +279,9 @@ header = [
     'Player',   # name of player
     'GP',       # games played
     '4I',       # interrupt correct
-    '4',        # correct (but no interrupt)
-    'X',        # not interrupt, wrong buzz
-    '-4',       # interrupt incorrect
+    '4s',       # correct (but no interrupt)
+    '0s',       # not interrupt, wrong buzz
+    '-4s',      # interrupt incorrect
     'TUH',      # tossups heard
     '#buzz',    # number of total buzzes
     '%buzz',    # percent of tossups heard that the player buzzed
