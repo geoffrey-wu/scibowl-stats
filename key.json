@@ -1,15 +1,16 @@
 {
     "is high school": true,
     "directory": "Scoresheets",
-    
-    "rosters": "",
-    "force players onto rosters": false,
+    "verbose": false,
+
+    "rosters": "rosters.txt",
+    "force players onto rosters": true,
 
     "category directory": "",
-    "force questions to have categories": false,
+    "force questions to have categories": true,
 
     "has interrupt corrects": false,
-    "track TUH": false,
+    "track TUH": true,
     "player names to ignore": [
         "",
         "Nan",
@@ -31,6 +32,7 @@
         "B4",
         "B5"
     ],
+    "sheets to ignore": ["rosters", "template", "Copy of template"],
     "HS cats": {
         "per packet": {
             "all": 23,

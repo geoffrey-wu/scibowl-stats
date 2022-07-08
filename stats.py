@@ -7,8 +7,10 @@ import numpy as np
 import pandas as pd
 
 
-# computes the Levenshtein distance between two strings a and b
 def ldist(a, b):
+    """
+    Computes the Levenshtein distance between two strings a and b
+    """
     size_x = len(a) + 1
     size_y = len(b) + 1
     matrix = np.zeros((size_x, size_y))
@@ -35,33 +37,19 @@ def ldist(a, b):
     return (matrix[size_x - 1, size_y - 1])
 
 
-# finds the element in `array` that best matches a given string `s` based on Levenshtein distance
 def find_closest_match(s, array):
-    bestWord = ''
-    bestDistance = 1000000
+    """
+    Finds the element in `array` that best matches a given string `s` based on Levenshtein distance
+    """
+    best_word = ''
+    best_distance = 1000000
 
     for string in array:
-        if (ldist(s, string) < bestDistance):
-            bestDistance = ldist(s, string)
-            bestWord = string
+        if (ldist(s, string) < best_distance):
+            best_distance = ldist(s, string)
+            best_word = string
 
-    return bestWord
-
-
-# initialize variables from json file
-with open('key.json') as f:
-    json_data = json.load(f)
-
-    level = 'HS cats' if json_data['is high school'] else 'MS cats'
-
-    # different subject categories
-    cats = [cat for cat in json_data[level]['categories'].keys()]
-    # file directory that contains all of the scoresheets
-    directory = json_data['directory']
-
-    # codes for different buzz results
-    # e.g. interrupt incorrect, interrupt correct
-    codes = json_data['codes']
+    return best_word
 
 
 # given a string, returns the question category
@@ -84,6 +72,8 @@ def get_code_index(cell):
         return 2
     elif cell in codes['incorrect']:
         return 3
+    
+
     return -1
 
 
@@ -94,6 +84,21 @@ def get_question_row(game):
             return i
     return -1
 
+
+# initialize variables from json file
+with open('key.json') as f:
+    json_data = json.load(f)
+
+    level = 'HS cats' if json_data['is high school'] else 'MS cats'
+
+    # different subject categories
+    cats = [cat for cat in json_data[level]['categories'].keys()]
+    # file directory that contains all of the scoresheets
+    directory = json_data['directory']
+
+    # codes for different buzz results
+    # e.g. interrupt incorrect, interrupt correct
+    codes = json_data['codes']
 
 ### read all of the players in the rosters file ###
 rosters = {}
@@ -120,15 +125,23 @@ for team in teams:
 
 # reads all of the spreadsheets in the given folder and subfolders and reads the data in each of the files
 for (dirpath, dirnames, filenames) in os.walk(directory):
-    for filename in filenames:
+    for filename in sorted(filenames):
         filepath = dirpath + '/' + filename
-        print(filepath)
+        print("Reading file", filepath)
 
         # skip files that do not have an excel file extension
         if filepath[-5:] != '.xlsx':
             continue
 
-        for game in pd.read_excel(filepath, sheet_name=None).values():
+        all_sheets = pd.read_excel(filepath, sheet_name=None)
+        for sheet in all_sheets:
+            if sheet in json_data['sheets to ignore']:
+                print(f'Skipped sheet "{sheet}"')
+                continue
+            elif json_data['verbose']:
+                print(f'Reading sheet "{sheet}"')
+
+            game = all_sheets[sheet]
             # converts the pandas dataframe to a np.array
             game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
 
@@ -152,7 +165,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     player2 = player
                     player = find_closest_match(player, rosters.keys())
                     if (ldist(player, player2) > 0):
-                        print('Changed', player2, 'to', player)
+                        print('Assuming player', player2, 'is', player)
 
                 # create a new player if the player isn't already in the database
                 if player not in player_stats:
@@ -161,7 +174,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                         'TUH': 0
                     }
                     for cat in cats:
-                        player_stats[player][cat] = len(codes)*[0]
+                        player_stats[player][cat] = [0 for _ in codes]
 
                 # if the player is on a team, then add that
                 # player's team to the list of teams in the game
@@ -204,9 +217,12 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                             player_stats[player][cat][index] += 1
                         elif not json_data['force questions to have categories']:
                             player_stats[player]['all'][index] += 1
+                        elif str(game[i, 1]) != 'nan':
+                            print('Skipped question with cat', game[i, 1], 'for player', player)
 
             # skip bonus stats if there are fewer than 2 teams
             if len(teams_in_game) < 2:
+                print(teams_in_game)
                 continue
 
             # find bonus stats
@@ -221,17 +237,21 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                             if json_data['category directory'] == '':
                                 cat = game[i, 1]
                             else:
-                                cat = open(json_data['category directory'], 'r').readlines()[
-                                    (i - question_row) % 23]
+                                cat = open(json_data['category directory'], 'r').readlines()[(i - question_row) % 23]
                             cat = get_category(cat)
 
                             if cat == 'n/a':  # only generate bonus stats if the question has a category
+                                if str(game[i, 1]) != 'nan': print(game[i, 1])
+
                                 continue
+
                             bonus_stats[teams_in_game[n]]['all'][0] += 1
                             bonus_stats[teams_in_game[n]][cat][0] += 1
                     n += 1
             bonus_stats[teams_in_game[0]]['GP'] += 1
             bonus_stats[teams_in_game[1]]['GP'] += 1
+    
+        print()
 
 
 cat_stats = {}      # dictionary containing per-category stats
@@ -335,6 +355,7 @@ for player in player_stats:
         ])
 
         if player_to_team_num(player) < 0:
+            print('Could not find team for player', player)
             continue
 
         team_data = team_tu_stats[cat][player_to_team_num(player)]  # team
