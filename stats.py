@@ -170,7 +170,8 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     if team not in teams_in_game:
                         teams_in_game.append(team)
 
-                player_stats[player]['GP'] += 1  # updated games played
+                if not json_data['track TUH']:
+                    player_stats[player]['GP'] += 1  # updated games played
 
                 # for each player, look down their respective column
                 # to collect data on when they buzzed
@@ -181,7 +182,9 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     # check if we have reached a "tossups heard" cell
                     for string in [game[i, 0], game[i - 1, j]]:
                         if str(string).upper().strip() in 'PLAYER TUH TU HEARD' and cell != 'NAN':
-                            player_stats[player]['TUH'] += int(cell)
+                            player_stats[player]['TUH'] += int(float(cell))
+                            if json_data['track TUH'] and int(float(cell)) > 0:
+                                player_stats[player]['GP'] += 1
 
                     # get the category the question was in
                     if json_data['category directory'] == '':
@@ -276,15 +279,13 @@ def player_to_team_num(player):
 
 # compiles per-category stats from the per-player stats
 for player in player_stats:
+    GP = player_stats[player]['GP']
     if json_data['track TUH']:
         TUH_total = player_stats[player]['TUH']   # tossups heard
-        GP = round(TUH_total/23, 2)
-        player_stats[player]['GP'] = GP
     else:
-        GP = player_stats[player]['GP']    # games played
         TUH_total = GP * 23
 
-    if GP == 0:
+    if TUH_total * 4 < 23:
         continue
 
     for cat in cats:
@@ -292,8 +293,7 @@ for player in player_stats:
 
         # TUH = tossups heard
         # this dictionary gives the number of tossups in each category per game
-        TUH = round(json_data[level]['per packet'][cat] *
-                    (GP if json_data['track TUH'] else TUH_total/23))
+        TUH = round(json_data[level]['per packet'][cat] * TUH_total/23)
 
         # number of times the player buzzed
         num_buzz = fourI + four + neg + x1
