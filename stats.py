@@ -455,7 +455,8 @@ def write_to_excel(writer, data, name):
 
 
 # write all the data into spreadsheets
-with pd.ExcelWriter(directory + '_stats.xlsx') as writer:
+with pd.ExcelWriter(directory + '_stats.xlsx', engine='xlsxwriter', engine_kwargs={'options': {'strings_to_numbers': True}}) as writer:
+    print(aggregate_subject)
     write_to_excel(writer, aggregate_subject, 'subject')
     if json_data['rosters'] != '':
         write_to_excel(writer, aggregate_subject_team, 'subject_team')
