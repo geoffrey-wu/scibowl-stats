@@ -280,8 +280,8 @@ header = [
     'GP',       # games played
     '4I',       # interrupt correct
     '4',        # correct (but no interrupt)
-    '-4',       # interrupt incorrect
     'X',        # not interrupt, wrong buzz
+    '-4',       # interrupt incorrect
     'TUH',      # tossups heard
     '#buzz',    # number of total buzzes
     '%buzz',    # percent of tossups heard that the player buzzed
@@ -352,8 +352,8 @@ for player in player_stats:
             GP,
             fourI,
             four,
-            neg,
             x1,
+            neg,
             TUH,
             num_buzz,
             pct_buzz,
@@ -374,8 +374,8 @@ for player in player_stats:
             [team_data[1], GP, bonus_stats[rosters[player]]['GP']])  # GP
         team_data[2] += fourI   # fourI
         team_data[3] += four    # four
-        team_data[4] += neg     # neg
-        team_data[5] += x1      # X1
+        team_data[4] += x1      # X1
+        team_data[5] += neg     # neg
         team_data[6] = max([team_data[6], TUH, round(
             team_data[1] * json_data[level]['per packet'][cat])])  # TUH
         team_data[7] += num_buzz  # number of buzzes
