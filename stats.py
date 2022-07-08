@@ -1,10 +1,10 @@
 import csv
 import json
 import os
-import re
-
 import numpy as np
 import pandas as pd
+import re
+from typing import List
 
 
 def ldist(a, b):
@@ -37,7 +37,7 @@ def ldist(a, b):
     return (matrix[size_x - 1, size_y - 1])
 
 
-def find_closest_match(s, array):
+def find_closest_match(s: str, array: List[str]) -> str:
     """
     Finds the element in `array` that best matches a given string `s` based on Levenshtein distance
     """
@@ -52,8 +52,10 @@ def find_closest_match(s, array):
     return best_word
 
 
-# given a string, returns the question category
-def get_category(category):
+def get_category(category: str) -> str:
+    """
+    Given a string, return the question category.
+    """
     category = str(category).lower().strip()
     for cat in cats:
         if category in json_data[level]['categories'][cat]:
@@ -61,8 +63,10 @@ def get_category(category):
     return 'n/a'
 
 
-# given a cell value, returns the correct index for the code
-def get_code_index(cell):
+def get_code_index(cell) -> int:
+    """
+    Given a cell value, returns the correct index for the code
+    """
     cell = str(cell).lower().strip()
     if cell in codes['interrupt_correct']:
         return 0
@@ -72,17 +76,27 @@ def get_code_index(cell):
         return 2
     elif cell in codes['incorrect']:
         return 3
-    
 
     return -1
 
 
-# returns the row number in the spreadsheet where the questions begin
-def get_question_row(game):
+def get_question_row(game: np.ndarray):
+    """
+    Returns the row number in the spreadsheet where the questions begin
+    """
     for i in range(game.shape[0]):
         if game[i][0] == 1:
             return i
     return -1
+
+
+def player_to_team_num(player: str) -> int:
+    return -1 if player not in rosters else team_to_number[rosters[player]]
+
+
+def write_to_excel(writer, data: list, name) -> None:
+    stat_sheet = pd.DataFrame(np.array(data))
+    stat_sheet.to_excel(writer, sheet_name=name, header=None, index=False)
 
 
 # initialize variables from json file
@@ -127,22 +141,20 @@ for team in teams:
 for (dirpath, dirnames, filenames) in os.walk(directory):
     for filename in sorted(filenames):
         filepath = dirpath + '/' + filename
-        print("Reading file", filepath)
 
-        # skip files that do not have an excel file extension
         if filepath[-5:] != '.xlsx':
             continue
 
+        print("Reading file", filepath)
+
         all_sheets = pd.read_excel(filepath, sheet_name=None)
-        for sheet in all_sheets:
+        for sheet, game in all_sheets.items():
             if sheet in json_data['sheets to ignore']:
                 print(f'Skipped sheet "{sheet}"')
                 continue
             elif json_data['verbose']:
                 print(f'Reading sheet "{sheet}"')
 
-            game = all_sheets[sheet]
-            # converts the pandas dataframe to a np.array
             game = np.append(np.array([game.columns]), game.to_numpy(), axis=0)
 
             teams_in_game = []  # contains the list of teams in the game
@@ -158,7 +170,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                 if player in json_data['player names to ignore']:
                     continue
 
-                # regex that removes anything enclosed in brackets [] from a player's name
+                # remove anything enclosed in brackets [] from a player's name
                 # player = re.sub('\[[^\]]*\]', '', player).strip()
 
                 if (json_data['force players onto rosters']):
@@ -211,14 +223,17 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     index = get_code_index(cell)
 
                     # add the buzz to the correct category
-                    if index != -1:
-                        if cat != 'n/a':
-                            player_stats[player]['all'][index] += 1
-                            player_stats[player][cat][index] += 1
-                        elif not json_data['force questions to have categories']:
-                            player_stats[player]['all'][index] += 1
-                        elif str(game[i, 1]) != 'nan':
-                            print('Skipped question with cat', game[i, 1], 'for player', player)
+                    if index == -1:
+                        continue
+
+                    if cat != 'n/a':
+                        player_stats[player]['all'][index] += 1
+                        player_stats[player][cat][index] += 1
+                    elif not json_data['force questions to have categories']:
+                        player_stats[player]['all'][index] += 1
+                    elif str(game[i, 1]) != 'nan':
+                        print('Skipped question with cat',
+                              game[i, 1], 'for player', player)
 
             # skip bonus stats if there are fewer than 2 teams
             if len(teams_in_game) < 2:
@@ -237,11 +252,13 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                             if json_data['category directory'] == '':
                                 cat = game[i, 1]
                             else:
-                                cat = open(json_data['category directory'], 'r').readlines()[(i - question_row) % 23]
+                                cat = open(json_data['category directory'], 'r').readlines()[
+                                    (i - question_row) % 23]
                             cat = get_category(cat)
 
                             if cat == 'n/a':  # only generate bonus stats if the question has a category
-                                if str(game[i, 1]) != 'nan': print(game[i, 1])
+                                if str(game[i, 1]) != 'nan':
+                                    print(game[i, 1])
 
                                 continue
 
@@ -250,7 +267,7 @@ for (dirpath, dirnames, filenames) in os.walk(directory):
                     n += 1
             bonus_stats[teams_in_game[0]]['GP'] += 1
             bonus_stats[teams_in_game[1]]['GP'] += 1
-    
+
         print()
 
 
@@ -283,18 +300,12 @@ for cat in cats:
 
 
 team_to_number = {}
-i = 1
-for team in teams:
-    team_to_number[team] = i
-    i += 1
+for i, team in enumerate(teams):
+    team_to_number[team] = i + 1
     for cat in cats:
         team_data = [0]*len(team_tu_stats[cat][0])
         team_data[0] = team
         team_tu_stats[cat].append(team_data)
-
-
-def player_to_team_num(player):
-    return -1 if player not in rosters else team_to_number[rosters[player]]
 
 
 # compiles per-category stats from the per-player stats
@@ -390,28 +401,10 @@ for cat in cats:
 
 # spreadsheet header
 if json_data['is high school']:
-    header = [
-        'Player',
-        'GP',
-        'ppg',
-        'bio',
-        'chem',
-        'energy',
-        'ess',
-        'math',
-        'physics'
-    ]
+    header = ['Player', 'GP', 'PPG', 'bio', 'chem', 'energy', 'ess', 'math', 'physics']
 else:
-    header = [
-        'Player',
-        'GP',
-        'ppg',
-        'life science',
-        'energy',
-        'ess',
-        'math',
-        'physical science'
-    ]
+    header = ['Player', 'GP', 'PPG', 'life science', 'energy', 'ess', 'math', 'physical science']
+
 aggregate_subject = [[i for i in header]]
 aggregate_subject_team = [[i for i in header]]
 aggregate_subject_team[0][0] = 'Team'
@@ -464,20 +457,14 @@ for team in bonus_stats:
 # if the spreadsheets do NOT have designations for
 # tossups that were interrupted correctly, then
 # delete all columns which rely on this data
-if json_data['has interrupt corrects'] == False:
+if not json_data['has interrupt corrects']:
     for cat in cats:
         cat_stats[cat] = np.delete(cat_stats[cat], [2, 9, 10], axis=1)
         team_tu_stats[cat] = np.delete(team_tu_stats[cat], [2, 9, 10], axis=1)
 
 
-def write_to_excel(writer, data, name):
-    stat_sheet = pd.DataFrame(np.array(data))
-    stat_sheet.to_excel(writer, sheet_name=name, header=None, index=False)
-
-
 # write all the data into spreadsheets
 with pd.ExcelWriter(directory + '_stats.xlsx', engine='xlsxwriter', engine_kwargs={'options': {'strings_to_numbers': True}}) as writer:
-    print(aggregate_subject)
     write_to_excel(writer, aggregate_subject, 'subject')
     if json_data['rosters'] != '':
         write_to_excel(writer, aggregate_subject_team, 'subject_team')
