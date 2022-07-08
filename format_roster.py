@@ -12,6 +12,6 @@ for line in open(filepath, 'r'):
             continue
         roster.append(player.strip() + ',' + team)
 
-f = open(filepath, 'a')
+f = open(filepath, 'w')
 for line in roster:
     f.write(line + '\n')
